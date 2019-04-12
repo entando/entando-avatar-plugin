@@ -4,6 +4,8 @@ import org.entando.plugin.avatar.service.AvatarService;
 import org.entando.plugin.avatar.web.rest.errors.BadRequestAlertException;
 import org.entando.plugin.avatar.web.rest.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,10 @@ import java.net.URISyntaxException;
 
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * REST controller for managing Avatar.
@@ -26,6 +32,7 @@ public class AvatarResource {
     private final Logger log = LoggerFactory.getLogger(AvatarResource.class);
 
     private static final String ENTITY_NAME = "avatarPluginAvatar";
+    private static final String FILE_PARAM = "data";
 
     private final AvatarService avatarService;
 
@@ -33,6 +40,39 @@ public class AvatarResource {
         this.avatarService = avatarService;
     }
 
+    @PostMapping("/avatars/image/{username}")
+    public ResponseEntity<Avatar> createAvatar(@PathVariable("username") String username,
+            @RequestParam(FILE_PARAM) MultipartFile image) throws IOException {
+
+        Avatar avatar = avatarService.upload(username, image);
+        return new ResponseEntity<>(avatar, HttpStatus.CREATED);
+    }
+    
+    @GetMapping("/avatars/image/{username}")
+    public ResponseEntity<?> getImage(@PathVariable("username") String username, HttpServletResponse response) throws IOException {
+
+        Optional<Avatar> maybeAvatar = avatarService.findByUsername(username);
+
+        if (!maybeAvatar.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Avatar avatar = maybeAvatar.get();
+
+        response.setContentType(avatar.getImageContentType());
+        try (ByteArrayInputStream in = new ByteArrayInputStream(avatar.getImage())) {
+            IOUtils.copy(in, response.getOutputStream());
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    @DeleteMapping("/avatars/image/{username}")
+    public ResponseEntity<Void> deleteAvatar(@PathVariable("username") String username) {
+        avatarService.deleteByUsername(username);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    
     /**
      * POST  /avatars : Create a new avatar.
      *

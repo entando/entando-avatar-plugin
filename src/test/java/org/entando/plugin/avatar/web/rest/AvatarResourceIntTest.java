@@ -42,9 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = AvatarPluginApp.class)
 public class AvatarResourceIntTest {
 
-    private static final String DEFAULT_USER_ID = "AAAAAAAAAA";
-    private static final String UPDATED_USER_ID = "BBBBBBBBBB";
-
+    private static final String DEFAULT_USERNAME = "AAAAAAAAAA";
+    private static final String UPDATED_USERNAME = "BBBBBBBBBB";
     private static final byte[] DEFAULT_IMAGE = TestUtil.createByteArray(1, "0");
     private static final byte[] UPDATED_IMAGE = TestUtil.createByteArray(1, "1");
     private static final String DEFAULT_IMAGE_CONTENT_TYPE = "image/jpg";
@@ -95,9 +94,9 @@ public class AvatarResourceIntTest {
      */
     public static Avatar createEntity(EntityManager em) {
         Avatar avatar = new Avatar()
-            .userId(DEFAULT_USER_ID)
             .image(DEFAULT_IMAGE)
-            .imageContentType(DEFAULT_IMAGE_CONTENT_TYPE);
+            .imageContentType(DEFAULT_IMAGE_CONTENT_TYPE)
+            .username(DEFAULT_USERNAME);
         return avatar;
     }
 
@@ -121,9 +120,9 @@ public class AvatarResourceIntTest {
         List<Avatar> avatarList = avatarRepository.findAll();
         assertThat(avatarList).hasSize(databaseSizeBeforeCreate + 1);
         Avatar testAvatar = avatarList.get(avatarList.size() - 1);
-        assertThat(testAvatar.getUserId()).isEqualTo(DEFAULT_USER_ID);
         assertThat(testAvatar.getImage()).isEqualTo(DEFAULT_IMAGE);
         assertThat(testAvatar.getImageContentType()).isEqualTo(DEFAULT_IMAGE_CONTENT_TYPE);
+        assertThat(testAvatar.getUsername()).isEqualTo(DEFAULT_USERNAME);
     }
 
     @Test
@@ -147,10 +146,10 @@ public class AvatarResourceIntTest {
 
     @Test
     @Transactional
-    public void checkUserIdIsRequired() throws Exception {
+    public void checkUsernameIsRequired() throws Exception {
         int databaseSizeBeforeTest = avatarRepository.findAll().size();
         // set the field null
-        avatar.setUserId(null);
+        avatar.setUsername(null);
 
         // Create the Avatar, which fails.
 
@@ -174,9 +173,9 @@ public class AvatarResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(avatar.getId().intValue())))
-            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.toString())))
             .andExpect(jsonPath("$.[*].imageContentType").value(hasItem(DEFAULT_IMAGE_CONTENT_TYPE)))
-            .andExpect(jsonPath("$.[*].image").value(hasItem(Base64Utils.encodeToString(DEFAULT_IMAGE))));
+            .andExpect(jsonPath("$.[*].image").value(hasItem(Base64Utils.encodeToString(DEFAULT_IMAGE))))
+            .andExpect(jsonPath("$.[*].username").value(hasItem(DEFAULT_USERNAME)));
     }
     
     @Test
@@ -190,9 +189,9 @@ public class AvatarResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(avatar.getId().intValue()))
-            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.toString()))
             .andExpect(jsonPath("$.imageContentType").value(DEFAULT_IMAGE_CONTENT_TYPE))
-            .andExpect(jsonPath("$.image").value(Base64Utils.encodeToString(DEFAULT_IMAGE)));
+            .andExpect(jsonPath("$.image").value(Base64Utils.encodeToString(DEFAULT_IMAGE)))
+            .andExpect(jsonPath("$.username").value(DEFAULT_USERNAME));
     }
 
     @Test
@@ -216,9 +215,9 @@ public class AvatarResourceIntTest {
         // Disconnect from session so that the updates on updatedAvatar are not directly saved in db
         em.detach(updatedAvatar);
         updatedAvatar
-            .userId(UPDATED_USER_ID)
             .image(UPDATED_IMAGE)
-            .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
+            .imageContentType(UPDATED_IMAGE_CONTENT_TYPE)
+            .username(UPDATED_USERNAME);
 
         restAvatarMockMvc.perform(put("/api/avatars")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -229,9 +228,9 @@ public class AvatarResourceIntTest {
         List<Avatar> avatarList = avatarRepository.findAll();
         assertThat(avatarList).hasSize(databaseSizeBeforeUpdate);
         Avatar testAvatar = avatarList.get(avatarList.size() - 1);
-        assertThat(testAvatar.getUserId()).isEqualTo(UPDATED_USER_ID);
         assertThat(testAvatar.getImage()).isEqualTo(UPDATED_IMAGE);
         assertThat(testAvatar.getImageContentType()).isEqualTo(UPDATED_IMAGE_CONTENT_TYPE);
+        assertThat(testAvatar.getUsername()).isEqualTo(UPDATED_USERNAME);
     }
 
     @Test

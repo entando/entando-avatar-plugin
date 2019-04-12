@@ -26,8 +26,8 @@ public class Avatar implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "user_id", nullable = false, unique = true)
-    private String userId;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Lob
     @Column(name = "image")
@@ -45,17 +45,17 @@ public class Avatar implements Serializable {
         this.id = id;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public Avatar userId(String userId) {
-        this.userId = userId;
+    public Avatar username(String username) {
+        this.username = username;
         return this;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public byte[] getImage() {
@@ -109,9 +109,9 @@ public class Avatar implements Serializable {
     public String toString() {
         return "Avatar{" +
             "id=" + getId() +
-            ", userId='" + getUserId() + "'" +
             ", image='" + getImage() + "'" +
             ", imageContentType='" + getImageContentType() + "'" +
+            ", username='" + getUsername() + "'" +
             "}";
     }
 }

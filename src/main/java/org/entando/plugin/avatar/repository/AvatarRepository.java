@@ -1,5 +1,6 @@
 package org.entando.plugin.avatar.repository;
 
+import java.util.Optional;
 import org.entando.plugin.avatar.domain.Avatar;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
@@ -12,4 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AvatarRepository extends JpaRepository<Avatar, Long> {
 
+    Optional<Avatar> findByUsername(String username);
+    
+    void deleteByUsername(String username);
 }
