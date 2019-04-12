@@ -1,0 +1,21 @@
+application {
+    config {
+        baseName avatarPlugin
+        applicationType microservice
+        prodDatabaseType postgresql
+        buildTool maven
+        packageName org.entando.plugin.avatar
+        authenticationType jwt
+        languages [en, it]
+        serviceDiscoveryType no
+    }
+    entities *
+}
+
+entity Avatar {
+    userId String required unique,
+    image ImageBlob
+}
+
+service Avatar with serviceClass
+

@@ -1,0 +1,68 @@
+{
+  "generator-jhipster": {
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "enableHibernateCache": true,
+    "enableSwaggerCodegen": false,
+    "enableTranslation": true,
+    "jhiPrefix": "jhi",
+    "languages": [
+      "en",
+      "it"
+    ],
+    "messageBroker": false,
+    "nativeLanguage": "en",
+    "packageName": "org.entando.plugin.avatar",
+    "packageFolder": "org/entando/plugin/avatar",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": false,
+    "serviceDiscoveryType": false,
+    "skipClient": true,
+    "testFrameworks": [],
+    "websocket": false,
+    "baseName": "avatarPlugin",
+    "applicationType": "microservice",
+    "buildTool": "maven",
+    "authenticationType": "jwt",
+    "jhipsterVersion": "5.8.2",
+    "skipUserManagement": true,
+    "clientPackageManager": "npm",
+    "cacheProvider": "hazelcast",
+    "serverPort": "8081",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [
+      {
+        "name": "generator-jhipster-entando",
+        "version": "0.0.0"
+      }
+    ],
+    "blueprint": "generator-jhipster-entando",
+    "blueprintVersion": "0.0.0"
+  },
+  "entities": [
+    "Avatar"
+  ],
+  "generator-jhipster-entando": {
+    "jhipsterVersion": "5.8.2",
+    "applicationType": "microservice",
+    "baseName": "avatarPlugin",
+    "packageName": "org.entando.plugin.avatar",
+    "packageFolder": "org/entando/plugin/avatar",
+    "serverPort": "8081",
+    "authenticationType": "jwt",
+    "cacheProvider": "hazelcast",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "MmRmOTg1ZDcyOWZhY2IyMzE1MWYyOTk3NDk0ZDU5NjM0MDYwNmIwNWRmMmRjOWNiNWIwODBhNmU1OWUwYWEzOTk3ZmFmNmU5OGFjZTE0ZWJjN2JmNjMzMWZlY2NlNTI4YWUwMmJhMmEwZGI0NjkwZWIzZWQ4NTdhYjc0OWNkZDg=",
+    "enableTranslation": true
+  }
+}
