@@ -92,6 +92,7 @@ public class AvatarConfigManager {
         avatarConfig.setImageWidth(Integer.parseInt(properties.get(AVATAR_IMAGE_WIDTH)));
         avatarConfig.setImageHeight(Integer.parseInt(properties.get(AVATAR_IMAGE_HEIGHT)));
         avatarConfig.setImageTypes(Arrays.asList(properties.get(AVATAR_IMAGE_TYPES).split(",")));
+        avatarConfig.setGravatarUrl(properties.get(GRAVATAR_URL));
         return avatarConfig;
     }
 }

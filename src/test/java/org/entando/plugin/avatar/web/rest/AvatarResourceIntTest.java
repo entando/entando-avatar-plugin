@@ -29,7 +29,9 @@ import java.util.List;
 
 import static org.entando.plugin.avatar.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.entando.plugin.avatar.config.AvatarConfigManager;
 import static org.hamcrest.Matchers.hasItem;
+import org.mockito.Mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -52,6 +54,9 @@ public class AvatarResourceIntTest {
     @Autowired
     private AvatarRepository avatarRepository;
 
+    @Mock
+    private AvatarConfigManager configManager;
+    
     @Autowired
     private AvatarService avatarService;
 
@@ -77,7 +82,7 @@ public class AvatarResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final AvatarResource avatarResource = new AvatarResource(avatarService);
+        final AvatarResource avatarResource = new AvatarResource(configManager, avatarService);
         this.restAvatarMockMvc = MockMvcBuilders.standaloneSetup(avatarResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)

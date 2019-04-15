@@ -6,6 +6,7 @@ import org.entando.plugin.avatar.web.rest.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,15 @@ import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.entando.plugin.avatar.config.AvatarConfig;
+import org.entando.plugin.avatar.config.AvatarConfigManager;
+import org.entando.plugin.avatar.config.AvatarStyle;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.DigestUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -34,9 +43,11 @@ public class AvatarResource {
     private static final String ENTITY_NAME = "avatarPluginAvatar";
     private static final String FILE_PARAM = "data";
 
+    private final AvatarConfigManager configManager;
     private final AvatarService avatarService;
 
-    public AvatarResource(AvatarService avatarService) {
+    public AvatarResource(AvatarConfigManager configManager, AvatarService avatarService) {
+        this.configManager = configManager;
         this.avatarService = avatarService;
     }
 
@@ -47,9 +58,56 @@ public class AvatarResource {
         Avatar avatar = avatarService.upload(username, image);
         return new ResponseEntity<>(avatar, HttpStatus.CREATED);
     }
-    
+
     @GetMapping("/avatars/image/{username}")
     public ResponseEntity<?> getImage(@PathVariable("username") String username, HttpServletResponse response) throws IOException {
+
+        if (configManager.getAvatarConfig().getStyle() == AvatarStyle.GRAVATAR) {
+            return returnGravatarImage(username, response);
+        }
+
+        return returnLocalImage(username, response);
+    }
+
+    private ResponseEntity<?> returnGravatarImage(String username, HttpServletResponse response) throws IOException {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<Resource> gravatarResponse = restTemplate.exchange(
+                getAvatarUrl(username), HttpMethod.GET, null, Resource.class);
+
+        if (!gravatarResponse.getStatusCode().is2xxSuccessful()) {
+            return new ResponseEntity<>(gravatarResponse.getStatusCode());
+        }
+
+        if (gravatarResponse.getBody() == null) {
+            throw new HttpMessageNotReadableException("Response body is null");
+        }
+
+        try (InputStream in = gravatarResponse.getBody().getInputStream()) {
+            IOUtils.copy(in, response.getOutputStream());
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private String getAvatarUrl(String username) {
+
+        AvatarConfig avatarConfig = configManager.getAvatarConfig();
+
+        String url = avatarConfig.getGravatarUrl();
+
+        if (!url.endsWith("/")) {
+            url += "/";
+        }
+
+        url += DigestUtils.md5DigestAsHex(username.getBytes())
+                + "?d=404&s=" + avatarConfig.getImageWidth();
+
+        return url;
+    }
+
+    private ResponseEntity<?> returnLocalImage(String username, HttpServletResponse response) throws IOException {
 
         Optional<Avatar> maybeAvatar = avatarService.findByUsername(username);
 
