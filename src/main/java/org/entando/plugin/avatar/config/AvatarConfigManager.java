@@ -50,6 +50,7 @@ public class AvatarConfigManager {
             AvatarConfig defaultConfig = AvatarConfig.getDefault();
 
             fillConfigMap(client.configMaps()
+                    .inNamespace(NAMESPACE)
                     .createNew()
                     .withNewMetadata()
                     .withName(CONFIG_MAP_NAME)
