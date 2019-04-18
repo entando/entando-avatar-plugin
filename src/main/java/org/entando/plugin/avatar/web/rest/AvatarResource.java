@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.entando.plugin.avatar.client.AuthClient;
 import org.entando.plugin.avatar.config.AvatarConfig;
 import org.entando.plugin.avatar.config.AvatarConfigManager;
 import org.entando.plugin.avatar.config.AvatarStyle;
@@ -45,36 +46,40 @@ public class AvatarResource {
 
     private final AvatarConfigManager configManager;
     private final AvatarService avatarService;
+    private final AuthClient authClient;
 
-    public AvatarResource(AvatarConfigManager configManager, AvatarService avatarService) {
+    public AvatarResource(AvatarConfigManager configManager, AvatarService avatarService, AuthClient authClient) {
         this.configManager = configManager;
         this.avatarService = avatarService;
+        this.authClient = authClient;
     }
 
-    @PostMapping("/avatars/image/{username}")
-    public ResponseEntity<Avatar> createAvatar(@PathVariable("username") String username,
+    @PostMapping("/avatars/image/{userId}")
+    public ResponseEntity<Avatar> createAvatar(@PathVariable("userId") String userId,
             @RequestParam(FILE_PARAM) MultipartFile image) throws IOException {
 
-        Avatar avatar = avatarService.upload(username, image);
+        Avatar avatar = avatarService.upload(userId, image);
         return new ResponseEntity<>(avatar, HttpStatus.CREATED);
     }
 
-    @GetMapping("/avatars/image/{username}")
-    public ResponseEntity<?> getImage(@PathVariable("username") String username, HttpServletResponse response) throws IOException {
+    @GetMapping("/avatars/image/{userId}")
+    public ResponseEntity<?> getImage(@PathVariable("userId") String userId, HttpServletResponse response) throws IOException {
 
         if (configManager.getAvatarConfig().getStyle() == AvatarStyle.GRAVATAR) {
-            return returnGravatarImage(username, response);
+            return returnGravatarImage(userId, response);
         }
 
-        return returnLocalImage(username, response);
+        return returnLocalImage(userId, response);
     }
 
-    private ResponseEntity<?> returnGravatarImage(String username, HttpServletResponse response) throws IOException {
+    private ResponseEntity<?> returnGravatarImage(String userId, HttpServletResponse response) throws IOException {
 
         RestTemplate restTemplate = new RestTemplate();
 
+        String email = authClient.getUserDetail(userId).getEmail();
+        
         ResponseEntity<Resource> gravatarResponse = restTemplate.exchange(
-                getAvatarUrl(username), HttpMethod.GET, null, Resource.class);
+                getAvatarUrl(email), HttpMethod.GET, null, Resource.class);
 
         if (!gravatarResponse.getStatusCode().is2xxSuccessful()) {
             return new ResponseEntity<>(gravatarResponse.getStatusCode());
@@ -91,7 +96,7 @@ public class AvatarResource {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private String getAvatarUrl(String username) {
+    private String getAvatarUrl(String email) {
 
         AvatarConfig avatarConfig = configManager.getAvatarConfig();
 
@@ -101,7 +106,7 @@ public class AvatarResource {
             url += "/";
         }
 
-        url += DigestUtils.md5DigestAsHex(username.getBytes())
+        url += DigestUtils.md5DigestAsHex(email.getBytes())
                 + "?d=404&s=" + avatarConfig.getImageWidth();
 
         return url;
