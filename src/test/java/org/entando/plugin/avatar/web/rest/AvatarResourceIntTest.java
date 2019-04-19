@@ -2,6 +2,9 @@ package org.entando.plugin.avatar.web.rest;
 
 import org.entando.plugin.avatar.AvatarPluginApp;
 
+import org.entando.plugin.avatar.client.AuthClient;
+import org.entando.plugin.avatar.config.AvatarConfigManager;
+import org.entando.plugin.avatar.config.KubernetesTestConfig;
 import org.entando.plugin.avatar.domain.Avatar;
 import org.entando.plugin.avatar.repository.AvatarRepository;
 import org.entando.plugin.avatar.service.AvatarService;
@@ -10,6 +13,7 @@ import org.entando.plugin.avatar.web.rest.errors.ExceptionTranslator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,12 +30,9 @@ import org.springframework.validation.Validator;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-
 import static org.entando.plugin.avatar.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.entando.plugin.avatar.config.AvatarConfigManager;
 import static org.hamcrest.Matchers.hasItem;
-import org.mockito.Mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -41,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see AvatarResource
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = AvatarPluginApp.class)
+@SpringBootTest(classes = {AvatarPluginApp.class, KubernetesTestConfig.class})
 public class AvatarResourceIntTest {
 
     private static final String DEFAULT_USERNAME = "AAAAAAAAAA";
@@ -59,6 +60,9 @@ public class AvatarResourceIntTest {
     
     @Autowired
     private AvatarService avatarService;
+    
+    @Mock
+    private AuthClient authClient;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -82,7 +86,7 @@ public class AvatarResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final AvatarResource avatarResource = new AvatarResource(configManager, avatarService);
+        final AvatarResource avatarResource = new AvatarResource(configManager, avatarService, authClient);
         this.restAvatarMockMvc = MockMvcBuilders.standaloneSetup(avatarResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)

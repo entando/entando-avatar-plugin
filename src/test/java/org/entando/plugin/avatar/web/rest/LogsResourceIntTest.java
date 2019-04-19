@@ -2,6 +2,7 @@ package org.entando.plugin.avatar.web.rest;
 
 import org.entando.plugin.avatar.AvatarPluginApp;
 import org.entando.plugin.avatar.web.rest.vm.LoggerVM;
+import org.entando.plugin.avatar.config.KubernetesTestConfig;
 import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.LoggerContext;
 import org.junit.Before;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see LogsResource
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = AvatarPluginApp.class)
+@SpringBootTest(classes = {AvatarPluginApp.class, KubernetesTestConfig.class})
 public class LogsResourceIntTest {
 
     private MockMvc restLogsMockMvc;

@@ -1,6 +1,7 @@
 package org.entando.plugin.avatar.web.rest.errors;
 
 import org.entando.plugin.avatar.AvatarPluginApp;
+import org.entando.plugin.avatar.config.KubernetesTestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see ExceptionTranslator
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = AvatarPluginApp.class)
+@SpringBootTest(classes = {AvatarPluginApp.class, KubernetesTestConfig.class})
 public class ExceptionTranslatorIntTest {
 
     @Autowired
