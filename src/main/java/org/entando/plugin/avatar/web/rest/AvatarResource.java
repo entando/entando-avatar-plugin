@@ -10,6 +10,7 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.entando.plugin.avatar.client.AuthClient;
 import org.entando.plugin.avatar.config.AvatarConfig;
-import org.entando.plugin.avatar.config.AvatarConfigManager;
+// import org.entando.plugin.avatar.config.AvatarConfigManager;
 import org.entando.plugin.avatar.config.AvatarStyle;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -37,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasAuthority('avatars')")
 public class AvatarResource {
 
     private final Logger log = LoggerFactory.getLogger(AvatarResource.class);
@@ -44,12 +46,12 @@ public class AvatarResource {
     private static final String ENTITY_NAME = "avatarPluginAvatar";
     private static final String FILE_PARAM = "data";
 
-    private final AvatarConfigManager configManager;
+    // private final AvatarConfigManager configManager;
     private final AvatarService avatarService;
     private final AuthClient authClient;
 
-    public AvatarResource(AvatarConfigManager configManager, AvatarService avatarService, AuthClient authClient) {
-        this.configManager = configManager;
+    public AvatarResource(AvatarService avatarService, AuthClient authClient) {
+    // public AvatarResource(AvatarConfigManager configManager, AvatarService avatarService, AuthClient authClient) {
         this.avatarService = avatarService;
         this.authClient = authClient;
     }
@@ -65,52 +67,52 @@ public class AvatarResource {
     @GetMapping("/avatars/image/{userId}")
     public ResponseEntity<?> getImage(@PathVariable("userId") String userId, HttpServletResponse response) throws IOException {
 
-        if (configManager.getAvatarConfig().getStyle() == AvatarStyle.GRAVATAR) {
-            return returnGravatarImage(userId, response);
-        }
+        // if (configManager.getAvatarConfig().getStyle() == AvatarStyle.GRAVATAR) {
+        //     return returnGravatarImage(userId, response);
+        // }
 
         return returnLocalImage(userId, response);
     }
 
-    private ResponseEntity<?> returnGravatarImage(String userId, HttpServletResponse response) throws IOException {
+    // private ResponseEntity<?> returnGravatarImage(String userId, HttpServletResponse response) throws IOException {
 
-        RestTemplate restTemplate = new RestTemplate();
+    //     RestTemplate restTemplate = new RestTemplate();
 
-        String email = authClient.getUserDetail(userId).getEmail();
+    //     String email = authClient.getUserDetail(userId).getEmail();
         
-        ResponseEntity<Resource> gravatarResponse = restTemplate.exchange(
-                getAvatarUrl(email), HttpMethod.GET, null, Resource.class);
+    //     ResponseEntity<Resource> gravatarResponse = restTemplate.exchange(
+    //             getAvatarUrl(email), HttpMethod.GET, null, Resource.class);
 
-        if (!gravatarResponse.getStatusCode().is2xxSuccessful()) {
-            return new ResponseEntity<>(gravatarResponse.getStatusCode());
-        }
+    //     if (!gravatarResponse.getStatusCode().is2xxSuccessful()) {
+    //         return new ResponseEntity<>(gravatarResponse.getStatusCode());
+    //     }
 
-        if (gravatarResponse.getBody() == null) {
-            throw new HttpMessageNotReadableException("Response body is null");
-        }
+    //     if (gravatarResponse.getBody() == null) {
+    //         throw new HttpMessageNotReadableException("Response body is null");
+    //     }
 
-        try (InputStream in = gravatarResponse.getBody().getInputStream()) {
-            IOUtils.copy(in, response.getOutputStream());
-        }
+    //     try (InputStream in = gravatarResponse.getBody().getInputStream()) {
+    //         IOUtils.copy(in, response.getOutputStream());
+    //     }
 
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>(HttpStatus.OK);
+    // }
 
-    private String getAvatarUrl(String email) {
+    // private String getAvatarUrl(String email) {
 
-        AvatarConfig avatarConfig = configManager.getAvatarConfig();
+    //     AvatarConfig avatarConfig = configManager.getAvatarConfig();
 
-        String url = avatarConfig.getGravatarUrl();
+    //     String url = avatarConfig.getGravatarUrl();
 
-        if (!url.endsWith("/")) {
-            url += "/";
-        }
+    //     if (!url.endsWith("/")) {
+    //         url += "/";
+    //     }
 
-        url += DigestUtils.md5DigestAsHex(email.getBytes())
-                + "?d=404&s=" + avatarConfig.getImageWidth();
+    //     url += DigestUtils.md5DigestAsHex(email.getBytes())
+    //             + "?d=404&s=" + avatarConfig.getImageWidth();
 
-        return url;
-    }
+    //     return url;
+    // }
 
     private ResponseEntity<?> returnLocalImage(String username, HttpServletResponse response) throws IOException {
 

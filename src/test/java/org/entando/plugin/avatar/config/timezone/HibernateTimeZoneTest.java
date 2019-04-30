@@ -1,7 +1,6 @@
 package org.entando.plugin.avatar.config.timezone;
 
 import org.entando.plugin.avatar.AvatarPluginApp;
-import org.entando.plugin.avatar.config.KubernetesTestConfig;
 import org.entando.plugin.avatar.repository.timezone.DateTimeWrapper;
 import org.entando.plugin.avatar.repository.timezone.DateTimeWrapperRepository;
 import org.junit.Before;
@@ -24,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Unit tests for the UTC Hibernate configuration.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {AvatarPluginApp.class, KubernetesTestConfig.class})
+@SpringBootTest(classes = AvatarPluginApp.class)
 public class HibernateTimeZoneTest {
 
     @Autowired

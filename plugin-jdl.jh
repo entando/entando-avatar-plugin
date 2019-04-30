@@ -5,7 +5,7 @@ application {
         prodDatabaseType postgresql
         buildTool maven
         packageName org.entando.plugin.avatar
-        authenticationType jwt
+        authenticationType oauth2
         languages [en, it]
         serviceDiscoveryType no
     }
@@ -13,7 +13,7 @@ application {
 }
 
 entity Avatar {
-    userId String required unique,
+    username String required unique,
     image ImageBlob
 }
 

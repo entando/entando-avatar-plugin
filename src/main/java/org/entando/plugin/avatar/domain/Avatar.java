@@ -109,9 +109,9 @@ public class Avatar implements Serializable {
     public String toString() {
         return "Avatar{" +
             "id=" + getId() +
+            ", username='" + getUsername() + "'" +
             ", image='" + getImage() + "'" +
             ", imageContentType='" + getImageContentType() + "'" +
-            ", username='" + getUsername() + "'" +
             "}";
     }
 }
