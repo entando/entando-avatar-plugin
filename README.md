@@ -86,3 +86,19 @@ To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`)
 [running tests page]: https://www.jhipster.tech/documentation-archive/v5.8.2/running-tests/
 [code quality page]: https://www.jhipster.tech/documentation-archive/v5.8.2/code-quality/
 [setting up continuous integration]: https://www.jhipster.tech/documentation-archive/v5.8.2/setting-up-ci/
+
+## Keycloak Entando Integration
+
+To make this application work with your instance of keycloak you will need to configure Keycloak properly.
+
+What is required is a `cliend-id` and a `client-secret` for this application (required to verify the token that is used to access the service) as well as you will need
+a client scope which will be able to map user and client permissions/roles into the token.
+Here the steps to achieve this:
+- In keycloak, create a new client scope with the name that you want
+- Once created, you need to create two mappers:
+    - The first mapper will map the User Client Role to a claim named **roles** of type string - make sure this claim is added to the ID token, the access token and the user info endpoint
+    - The second mapper will map the User Realm Role also to a claim named **roles** of type string - again make sure this claim is added to the ID token, the access token and the user info endpoint
+- Now you need to add the Client Scope to the client
+- Make sure the client has the `Service Accont` protocol active, so that you can give "roles" even to the client itself
+
+Now you should be able to generate a new token and use it to get access to the service
