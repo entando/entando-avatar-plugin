@@ -55,11 +55,11 @@ public class AvatarResource {
     }
 
     @PostMapping("/avatars/image/{userId}")
-    public ResponseEntity<Avatar> createAvatar(@PathVariable("userId") String userId,
+    public ResponseEntity<?> createAvatar(@PathVariable("userId") String userId,
             @RequestParam(FILE_PARAM) MultipartFile image) throws IOException {
 
-        Avatar avatar = avatarService.upload(userId, image);
-        return new ResponseEntity<>(avatar, HttpStatus.CREATED);
+        avatarService.upload(userId, image);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/avatars/image/{userId}")
@@ -89,9 +89,11 @@ public class AvatarResource {
             throw new HttpMessageNotReadableException("Response body is null");
         }
 
+        response.setContentType(String.valueOf(gravatarResponse.getHeaders().getContentType()));
         try (InputStream in = gravatarResponse.getBody().getInputStream()) {
             IOUtils.copy(in, response.getOutputStream());
         }
+
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

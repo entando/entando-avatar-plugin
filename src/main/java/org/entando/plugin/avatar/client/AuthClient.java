@@ -45,7 +45,7 @@ public class AuthClient {
 
     interface UserDetail {
 
-        @RequestLine("GET /v1/users/{userId}")
+        @RequestLine("GET /users/{userId}")
         User get(@Param("userId") String userId);
     }
 
