@@ -2,6 +2,7 @@ package org.entando.plugin.avatar.web.rest;
 
 import org.entando.plugin.avatar.AvatarPluginApp;
 import org.entando.plugin.avatar.client.AuthClient;
+import org.entando.plugin.avatar.config.AvatarConfigManager;
 import org.entando.plugin.avatar.domain.Avatar;
 import org.entando.plugin.avatar.repository.AvatarRepository;
 import org.entando.plugin.avatar.service.AvatarService;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -57,6 +59,9 @@ public class AvatarResourceIntTest {
     private AvatarService avatarService;
 
     @Autowired
+    private AvatarConfigManager configManager;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -68,6 +73,7 @@ public class AvatarResourceIntTest {
     @Autowired
     private EntityManager em;
 
+    @Qualifier("defaultValidator")
     @Autowired
     private Validator validator;
 
@@ -81,7 +87,7 @@ public class AvatarResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final AvatarResource avatarResource = new AvatarResource(avatarService, authClient);
+        final AvatarResource avatarResource = new AvatarResource(configManager, avatarService, authClient);
         this.restAvatarMockMvc = MockMvcBuilders.standaloneSetup(avatarResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)

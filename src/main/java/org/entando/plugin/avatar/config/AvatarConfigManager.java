@@ -13,7 +13,8 @@
  */
 package org.entando.plugin.avatar.config;
 
-import org.entando.config.service.ConfigService;
+
+import org.entando.config.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
