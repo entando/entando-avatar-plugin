@@ -13,28 +13,44 @@
  */
 package org.entando.plugin.avatar.config;
 
-import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
-import org.junit.Rule;
+import org.entando.config.ConfigService;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.*;
 
 public class AvatarConfigManagerTest {
 
-    @Rule
-    public KubernetesServer server = new KubernetesServer(true, true);
+    @Mock
+    private ConfigService<AvatarConfig> configService;
 
     @Test
     public void testUpdateConfig() {
+        MockitoAnnotations.initMocks(this);
+        final AvatarConfigManager configManager = new AvatarConfigManager(configService);
 
-        AvatarConfigManager configManager = new AvatarConfigManager(server.getClient());
+        when(configService.getConfig()).thenReturn(null);
 
-        AvatarConfig defaultConfig = AvatarConfig.getDefault();
-        AvatarConfig avatarConfig = configManager.getAvatarConfig();
-        assertThat(avatarConfig.getStyle()).isEqualTo(defaultConfig.getStyle());
+        final AvatarConfig defaultConfig = AvatarConfig.getDefault();
+        final AvatarConfig avatarConfig = configManager.getAvatarConfig();
+        assertThat(defaultConfig.getStyle()).isEqualTo(avatarConfig.getStyle());
+        assertThat(defaultConfig.getGravatarUrl()).isEqualTo(avatarConfig.getGravatarUrl());
+        assertThat(defaultConfig.getImageWidth()).isEqualTo(avatarConfig.getImageWidth());
+        assertThat(defaultConfig.getImageHeight()).isEqualTo(avatarConfig.getImageHeight());
 
-        avatarConfig.setStyle(AvatarStyle.GRAVATAR);
+        final AvatarConfig config = new AvatarConfig();
+        config.setGravatarUrl(defaultConfig.getGravatarUrl());
+        config.setImageHeight(256);
+        config.setImageWidth(256);
+        config.setImageTypes(Arrays.asList("png", "jpg"));
+        config.setStyle(AvatarStyle.GRAVATAR);
 
-        configManager.updateAvatarConfig(avatarConfig);
+        configManager.updateAvatarConfig(config);
+        verify(configService, times(1)).updateConfig(same(config));
     }
 }
