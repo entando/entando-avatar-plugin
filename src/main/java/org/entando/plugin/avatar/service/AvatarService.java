@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.entando.plugin.avatar.config.AvatarConfig;
-// import org.entando.plugin.avatar.config.AvatarConfigManager;
+import org.entando.plugin.avatar.config.AvatarConfigManager;
 import org.entando.plugin.avatar.web.rest.errors.BadRequestAlertException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,41 +31,37 @@ public class AvatarService {
     private static final Logger log = LoggerFactory.getLogger(AvatarService.class);
 
     private final AvatarRepository avatarRepository;
-    // private final AvatarConfigManager avatarConfigManager;
+    private final AvatarConfigManager avatarConfigManager;
 
-    // public AvatarService(AvatarRepository avatarRepository, AvatarConfigManager avatarConfigManager) {
-    //     this.avatarRepository = avatarRepository;
-    //     this.avatarConfigManager = avatarConfigManager;
-    // }
-
-    public AvatarService(AvatarRepository avatarRepository) {
+    public AvatarService(AvatarRepository avatarRepository, AvatarConfigManager avatarConfigManager) {
         this.avatarRepository = avatarRepository;
+        this.avatarConfigManager = avatarConfigManager;
     }
 
     public Avatar upload(String username, MultipartFile image) throws IOException {
 
-        // AvatarConfig avatarConfig = avatarConfigManager.getAvatarConfig();
+        AvatarConfig avatarConfig = avatarConfigManager.getAvatarConfig();
 
         String fileName = image.getOriginalFilename();
         String extension = fileName.substring(fileName.lastIndexOf('.') + 1).trim();
 
-        // if (!avatarConfig.getImageTypes().contains(extension)) {
-        //     throw new BadRequestAlertException("Invalid image type: " + extension, ENTITY_NAME, "invalidtype");
-        // }
+        if (!avatarConfig.getImageTypes().contains(extension)) {
+            throw new BadRequestAlertException("Invalid image type: " + extension, ENTITY_NAME, "invalidtype");
+        }
 
-        // if (image.getSize() > avatarConfig.getImageMaxSize() * 1024) {
-        //     throw new BadRequestAlertException("Image size too big. Max allowed " + avatarConfig.getImageMaxSize() + " MB",
-        //             ENTITY_NAME, "toobig");
-        // }
+        if (image.getSize() > avatarConfig.getImageMaxSize() * 1024) {
+            throw new BadRequestAlertException("Image size too big. Max allowed " + avatarConfig.getImageMaxSize() + " MB",
+                    ENTITY_NAME, "toobig");
+        }
 
         Avatar avatar = new Avatar();
 
         try (InputStream in = image.getInputStream()) {
             BufferedImage bufImg = ImageIO.read(in);
-            // if (bufImg.getWidth() != avatarConfig.getImageWidth()
-            //         || bufImg.getHeight() != avatarConfig.getImageHeight()) {
-            //     throw new BadRequestAlertException("Wrong image dimensions", ENTITY_NAME, "invaliddimensions");
-            // }
+            if (bufImg.getWidth() != avatarConfig.getImageWidth()
+                    || bufImg.getHeight() != avatarConfig.getImageHeight()) {
+                throw new BadRequestAlertException("Wrong image dimensions", ENTITY_NAME, "invaliddimensions");
+            }
 
             try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
                 ImageIO.write(bufImg, extension, os);
