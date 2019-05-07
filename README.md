@@ -102,3 +102,11 @@ Here the steps to achieve this:
 - Make sure the client has the `Service Accont` protocol active, so that you can give "roles" even to the client itself
 
 Now you should be able to generate a new token and use it to get access to the service
+
+## Integration with entando-auth and config-service services
+
+Here are some of the requirements to make this application working properly
+
+1. You need the [entando-auth](https://github.com/entando/entando-auth/) service up and running, make sure you configure it properly in the avatar plugin by updating the `auth-client.properties` file
+2. The avatar-plugin client needs to have the `get-user` role in keycloak, otherwise it will not be able to retrieve user email necessary for the gravatar
+3. You need the [config-service](https://github.com/entando/config-service) up and running and you need to store a first configuration to make the avatar plugin work properly
