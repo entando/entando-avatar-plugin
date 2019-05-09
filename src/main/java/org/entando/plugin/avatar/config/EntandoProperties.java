@@ -9,6 +9,7 @@ public class EntandoProperties {
     private String clientSecret;
     private String accessTokenUri;
     private String authServiceUri;
+    private String configServiceUri;
 
     public String getClientId() {
         return clientId;
@@ -40,5 +41,13 @@ public class EntandoProperties {
 
     public void setAuthServiceUri(String authServiceUri) {
         this.authServiceUri = authServiceUri;
+    }
+
+    public String getConfigServiceUri() {
+        return configServiceUri;
+    }
+
+    public void setConfigServiceUri(String configServiceUri) {
+        this.configServiceUri = configServiceUri;
     }
 }
