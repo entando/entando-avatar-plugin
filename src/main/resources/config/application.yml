@@ -132,7 +132,8 @@ security:
             client-id: avatar-plugin
             client-secret: 3120b69c-8420-44fd-92b3-2c1f5287afe9
         resource:
-            user-info-uri: http://localhost:8081/auth/realms/entando-development/protocol/openid-connect/userinfo
+            token-info-uri: http://localhost:8081/auth/realms/entando-development/protocol/openid-connect/token/introspect
+#            user-info-uri: http://localhost:8081/auth/realms/entando-development/protocol/openid-connect/userinfo
 
 server:
     servlet:
@@ -178,6 +179,23 @@ jhipster:
         contact-email:
         license:
         license-url:
+
+# ===================================================================
+# Entando specific properties
+# Add your own application properties here, see the ApplicationProperties class
+# to have type-safe configuration, like in the JHipsterProperties above
+#
+# More documentation is available at:
+# https://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+entando:
+    client-id: avatar-plugin
+    client-secret: 3120b69c-8420-44fd-92b3-2c1f5287afe9
+    access-token-uri: http://localhost:8081/auth/realms/entando-development/protocol/openid-connect/token
+    auth-service-uri: http://localhost:8082/
+    config-service-uri: http://localhost:8083 
+
 
 # ===================================================================
 # Application specific properties
