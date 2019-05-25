@@ -4,7 +4,7 @@
 
     <groupId>org.entando.plugin</groupId>
     <artifactId>avatar-plugin</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>5.2.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Avatar Plugin</name>
 
@@ -384,14 +384,17 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- jhipster-needle-maven-add-dependency -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -541,7 +544,7 @@
                           <image>openjdk:8-jre-alpine</image>
                       </from>
                       <to>
-                          <image>avatarplugin:latest</image>
+                          <image>entando/${project.build.finalName}:5.2.0-SNAPSHOT</image>
                       </to>
                       <container>
                           <entrypoint>

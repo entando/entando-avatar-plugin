@@ -79,6 +79,8 @@ management:
         web:
             server:
                 auto-time-requests: true
+    security:
+      enabled: false
 
 spring:
     application:
