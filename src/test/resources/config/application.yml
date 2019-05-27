@@ -109,3 +109,16 @@ jhipster:
 # ===================================================================
 
 # application:
+
+# ===================================================================
+# Entando specific properties
+# Add your own application properties here, see the ApplicationProperties class
+# to have type-safe configuration, like in the JHipsterProperties above
+# ===================================================================
+
+entando:
+    client-id: avatar-plugin
+    client-secret: 3120b69c-8420-44fd-92b3-2c1f5287afe9
+    access-token-uri: http://DO_NOT_CALL:8081/auth/realms/entando-development/protocol/openid-connect/token
+    auth-service-uri: http://DO_NOT_CALL:8082/
+    config-service-uri: http://DO_NOT_CALL:8083
