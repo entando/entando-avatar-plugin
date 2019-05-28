@@ -5,29 +5,27 @@ services:
     hostname: database
     image: "mysql:5.7"
     environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-      - MYSQL_DATABASE=avatar_db
-      - MYSQL_USER=avatar_user
-      - MYSQL_PASSWORD=password
-      - MYSQL_ROOT_PASSWORD=password
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: password
     healthcheck:
-        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-        timeout: 20s
-        retries: 10
+      test: ["CMD","/bin/sh","-i","-c", "MYSQL_PWD=\"${MYSQL_PASSWORD}\" mysql -h 127.0.0.1 -u ${MYSQL_USER} -D ${MYSQL_DATABASE} -e 'SELECT 1'"]
+      interval: 3s
+      timeout: 10s
+      retries: 20
 
   entando-avatar-plugin:
     image: entando/entando-avatar-plugin:5.2.0-SNAPSHOT
     hostname: entando-avatar-plugin
     environment:
-        SPRING_DATASOURCE_USERNAME: avatar_user
-        SPRING_DATASOURCE_PASSWORD: password
-        SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/avatar_db
-        SPRING_PROFILES_ACTIVE: prod,swagger
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/${MYSQL_DATABASE}
+      SPRING_PROFILES_ACTIVE: prod,swagger
     depends_on:
-        database:
-            condition: service_healthy
-    links:
-      - database:database
+      database:
+        condition: service_healthy
 
   smoke-test:
     image: entando/entando-spring-actuator-test:5.2.0-SNAPSHOT
