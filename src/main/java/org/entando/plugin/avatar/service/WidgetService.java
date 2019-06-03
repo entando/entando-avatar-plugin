@@ -39,10 +39,11 @@ public class WidgetService {
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
+    public void save(WidgetRequest widgetRequest) {
+
+    }
 
     private Resource[] loadResources(String pattern) throws IOException {
         return ResourcePatternUtils.getResourcePatternResolver(widgetResourceLoader).getResources(pattern);
     }
-
-
 }

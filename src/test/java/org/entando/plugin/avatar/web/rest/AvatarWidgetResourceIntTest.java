@@ -19,8 +19,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
+import javax.ws.rs.core.MediaType;
+
 import static org.entando.plugin.avatar.web.rest.TestUtil.createFormattingConversionService;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
@@ -68,4 +71,21 @@ public class AvatarWidgetResourceIntTest {
 
     }
 
+    @Test
+    public void should_store_a_new_widget() throws Exception {
+
+        String testWidget = "{" +
+            "    \"code\": \"test-widget\"," +
+            "    \"titles\": {" +
+            "        \"it\": \"Titolo di test\"," +
+            "        \"en\": \"Test title\"" +
+            "    }," +
+            "    \"group\": \"free\"," +
+            "    \"customUI\": \"<h1>My fancy Test</h1>\"" +
+            "}";
+
+        restAvatarWidgetResource.perform(post("/api/widgets")
+            .contentType(MediaType.APPLICATION_JSON).content(testWidget))
+            .andExpect(status().isCreated());
+    }
 }

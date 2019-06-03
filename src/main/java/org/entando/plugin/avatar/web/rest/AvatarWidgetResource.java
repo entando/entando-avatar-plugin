@@ -8,9 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class AvatarWidgetResource {
     }
 
     @GetMapping(value = "/widgets", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getAllAvatars() {
+    public ResponseEntity getAllWidgets() {
         log.debug("REST request to get all widgets");
         try {
             List<WidgetRequest> widgets = widgetService.findAll();
@@ -36,5 +38,12 @@ public class AvatarWidgetResource {
             log.error("An error occurred while retrieving widget definitions",e );
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping(value = "/widgets")
+    public ResponseEntity storeWidget(@Valid WidgetRequest widgetRequest) {
+        log.debug("REST request to store a new widget");
+        widgetService.save(widgetRequest);
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 }
