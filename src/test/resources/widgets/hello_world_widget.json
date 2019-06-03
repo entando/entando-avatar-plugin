@@ -1,0 +1,8 @@
+{
+    "code": "avatar_hello_world",
+    "titles": {
+        "it": "Ciao mondo",
+        "en": "Hello world"
+    },
+    "customUi": "<h1>Hello World!</h1>"
+}

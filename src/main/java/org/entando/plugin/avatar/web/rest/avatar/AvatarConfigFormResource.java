@@ -20,7 +20,7 @@ public class AvatarConfigFormResource {
 
     private final Logger log = LoggerFactory.getLogger(AvatarConfigFormResource.class);
 
-    @GetMapping(value = "/Avatar", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/avatar", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getJsonSchemaFormConfiguration() throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();
