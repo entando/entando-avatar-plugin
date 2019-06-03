@@ -1,6 +1,6 @@
 package org.entando.plugin.avatar.web.rest;
 
-import org.entando.entando.web.widget.model.WidgetRequest;
+import org.entando.plugin.avatar.domain.WidgetRequest;
 import org.entando.plugin.avatar.service.WidgetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
