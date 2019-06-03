@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping(value = "/api")
 public class AvatarWidgetResource {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(AvatarWidgetResource.class);
 
     private final WidgetService widgetService;
 
