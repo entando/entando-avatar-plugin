@@ -12,16 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
-import javax.ws.rs.core.MediaType;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import static org.entando.plugin.avatar.web.rest.TestUtil.createFormattingConversionService;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,32 +66,52 @@ public class AvatarWidgetResourceIntTest {
     }
 
     @Test
-    public void should_return_ok() throws Exception {
-        restAvatarWidgetResource.perform(get("/api/widgets"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$.[0].code").value("avatar_hello_world"))
-            .andExpect(jsonPath("$.[0].customUi").value("<h1>Hello World!</h1>"))
-            .andExpect(jsonPath("$.[0].titles.en").value("Hello world"))
-            .andExpect(jsonPath("$.[0].titles.it").value("Ciao mondo"));
+    public void should_be_able_to_store_and_retrieve_widgets() throws Exception {
+        try {
+            String testWidget = "{" +
+                "    \"code\": \"test-widget\"," +
+                "    \"titles\": {" +
+                "        \"it\": \"Titolo di test\"," +
+                "        \"en\": \"Test title\"" +
+                "    }," +
+                "    \"group\": \"free\"," +
+                "    \"customUi\": \"<h1>My fancy Test</h1>\"" +
+                "}";
+
+            test_widget_submission(testWidget);
+            test_find_widget(testWidget);
+
+        } finally {
+            clean_widget_folder();
+        }
 
     }
 
-    @Test
-    public void should_store_a_new_widget() throws Exception {
+    private void test_find_widget(String widget) throws Exception {
+        restAvatarWidgetResource.perform(get("/api/widgets"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.[*].code").value(hasItem("test-widget")))
+            .andExpect(jsonPath("$.[*].customUi").value(hasItem("<h1>My fancy Test</h1>")))
+            .andExpect(jsonPath("$.[*].titles.en").value(hasItem("Test title")))
+            .andExpect(jsonPath("$.[*].titles.it").value(hasItem("Titolo di test")));
+    }
 
-        String testWidget = "{" +
-            "    \"code\": \"test-widget\"," +
-            "    \"titles\": {" +
-            "        \"it\": \"Titolo di test\"," +
-            "        \"en\": \"Test title\"" +
-            "    }," +
-            "    \"group\": \"free\"," +
-            "    \"customUI\": \"<h1>My fancy Test</h1>\"" +
-            "}";
-
+    private void test_widget_submission(String testWidget) throws Exception {
         restAvatarWidgetResource.perform(post("/api/widgets")
             .contentType(MediaType.APPLICATION_JSON).content(testWidget))
             .andExpect(status().isCreated());
     }
+
+    private void clean_widget_folder() {
+        String widgetFolder = "src/test/resources/widgets";
+        try (Stream<Path> walk = Files.walk(Paths.get(widgetFolder))) {
+                walk.map(Path::toFile)
+                .filter(file -> !file.getPath().equals(widgetFolder))
+                .forEach(File::delete);
+        } catch (IOException e ) {
+            e.printStackTrace();
+        }
+    }
+
 }

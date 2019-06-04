@@ -122,3 +122,7 @@ entando:
     access-token-uri: http://DO_NOT_CALL:8081/auth/realms/entando-development/protocol/openid-connect/token
     auth-service-uri: http://DO_NOT_CALL:8082/
     config-service-uri: http://DO_NOT_CALL:8083
+
+
+widgets:
+    folder: src/test/resources/widgets
