@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -45,65 +46,36 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = AvatarPluginApp.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles({"default", "security"})
 public class AvatarWidgetResourceIntTest {
 
     private final static ObjectMapper MAPPER = new ObjectMapper();
-
-//    @Autowired
-//    private WebApplicationContext applicationContext;
+    private static final String WIDGET_FOLDER = "src/test/resources/widgets";
 
     @Autowired
-    private WidgetService avatarWidgetService;
-
-    @Autowired
-    private MappingJackson2HttpMessageConverter jacksonMessageConverter;
-
-    @Autowired
-    private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
-
-    @Autowired
-    private ExceptionTranslator exceptionTranslator;
-
-    @Qualifier("defaultValidator")
-    @Autowired
-    private Validator validator;
+    private WebApplicationContext applicationContext;
 
     private MockMvc restAvatarWidgetResource;
 
-    public static final String WIDGET_FOLDER = "src/test/resources/widgets";
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        final AvatarWidgetResource avatarResource = new AvatarWidgetResource(avatarWidgetService);
-        this.restAvatarWidgetResource = MockMvcBuilders.standaloneSetup(avatarResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter)
-            .setValidator(validator)
+        restAvatarWidgetResource = MockMvcBuilders
+            .webAppContextSetup(applicationContext)
             .apply(springSecurity())
             .build();
-
     }
 
-//    @Before
-//    public void setup() {
-//        restAvatarWidgetResource = MockMvcBuilders
-//            .webAppContextSetup(applicationContext)
-//            .apply(springSecurity())
-//            .build();
-//    }
-
     @Test
+    @WithMockUser(value = "spring")
     public void should_be_able_to_retrieve_a_widget() throws Exception {
         WidgetRequest testWidget = getRequestFromTestFile();
         test_find_widget(testWidget);
     }
 
     @Test
-    @WithMockUser(authorities = "savingWidget")
+    @WithMockUser(value = "spring", authorities = "saveWidget")
     public void should_submit_file_and_retrieve() throws Exception {
         WidgetRequest testWidget = new WidgetRequest();
         Map<String, String> titles = new HashMap<>();
