@@ -1,7 +1,7 @@
 package org.entando.plugin.avatar.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.entando.plugin.avatar.domain.WidgetRequest;
+import org.entando.entando.web.widget.model.WidgetRequest;
 import org.entando.plugin.avatar.web.rest.errors.InternalServerErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
