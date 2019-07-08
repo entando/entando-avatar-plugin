@@ -130,7 +130,7 @@ security:
     oauth2:
         client:
             client-id: avatar-plugin
-            client-secret: 13d7ca11-5682-4d7d-9e2e-27c900d1a000
+            client-secret: da6914b9-c0df-4c48-9213-6ffb44e0db96
         resource:
             token-info-uri: http://localhost:9080/auth/realms/entando-development/protocol/openid-connect/token/introspect
 #            user-info-uri: http://localhost:8081/auth/realms/entando-development/protocol/openid-connect/userinfo
@@ -188,7 +188,7 @@ jhipster:
 
 entando:
     client-id: avatar-plugin
-    client-secret: 13d7ca11-5682-4d7d-9e2e-27c900d1a000
+    client-secret: da6914b9-c0df-4c48-9213-6ffb44e0db96
     access-token-uri: http://localhost:9080/auth/realms/entando-development/protocol/openid-connect/token
     auth-service-uri: http://localhost:8082/
     config-service-uri: http://localhost:8083 
