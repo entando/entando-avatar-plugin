@@ -71,7 +71,7 @@ public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
         tokenServices.setClientId(resourceServerProperties.getClientId());
         tokenServices.setClientSecret(resourceServerProperties.getClientSecret());
         tokenServices.setCheckTokenEndpointUrl(resourceServerProperties.getTokenInfoUri());
-        tokenServices.setAccessTokenConverter(new KeycloakAccessTokenConverter());
+        tokenServices.setAccessTokenConverter(new KeycloakAccessTokenConverter(resourceServerProperties));
 
         resources.resourceId(resourceServerProperties.getResourceId());
         resources.tokenServices(tokenServices);
@@ -79,14 +79,20 @@ public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
 
     public static class KeycloakAccessTokenConverter extends DefaultAccessTokenConverter {
 
+        private final ResourceServerProperties resourceServerProperties;
+
+        KeycloakAccessTokenConverter(ResourceServerProperties resourceServerProperties) {
+            this.resourceServerProperties = resourceServerProperties;
+        }
+
         @Override
         public OAuth2Authentication extractAuthentication(Map<String, ?> map) {
             OAuth2Authentication oAuth2Authentication = super.extractAuthentication(map);
             Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) oAuth2Authentication.getOAuth2Request().getAuthorities();
             if (map.containsKey("resource_access")) {
                 Map<String, Object> resource_access = (Map<String, Object>) map.get("resource_access");
-                if(resource_access.containsKey("avatar-plugin")) {
-                    Map<String, Object> avatarPluginResource = (Map<String, Object>) resource_access.get("avatar-plugin");
+                if(resource_access.containsKey(this.resourceServerProperties.getClientId())) {
+                    Map<String, Object> avatarPluginResource = (Map<String, Object>) resource_access.get(this.resourceServerProperties.getClientId());
                     if (avatarPluginResource.containsKey("roles")) {
                         ((Collection<String>) avatarPluginResource.get("roles")).forEach(r -> authorities.add(new SimpleGrantedAuthority(r)));
                     }
