@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class WidgetService {
 
-    @Value("${entando.widget-folder:src/main/resources/widgets}")
+    @Value("${entando.widgets-folder}")
     private String widgetFolder;
 
     private final Logger logger = LoggerFactory.getLogger(WidgetService.class);

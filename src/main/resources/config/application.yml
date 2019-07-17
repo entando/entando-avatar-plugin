@@ -189,8 +189,7 @@ jhipster:
 entando:
     auth-service-uri: http://localhost:8082/
     config-service-uri: http://localhost:8083/
-    widgets:
-        folder: src/main/resources/widgets
+    widgets-folder: src/main/resources/widgets
 
 
 # ===================================================================
