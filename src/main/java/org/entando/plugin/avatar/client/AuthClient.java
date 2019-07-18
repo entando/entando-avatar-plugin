@@ -18,7 +18,7 @@ import feign.Param;
 import feign.RequestLine;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
-import org.entando.plugin.avatar.config.EntandoProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.security.oauth2.client.feign.OAuth2FeignRequestInterceptor;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -29,10 +29,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthClient {
 
-    private final EntandoProperties entandoProperties;
+    @Value("security.oauth.client.client-id")
+    private String clientId;
 
-    public AuthClient(EntandoProperties entandoProperties) {
-        this.entandoProperties = entandoProperties;
+    @Value("security.oauth.client.client-secret")
+    private String clientSecret;
+
+    @Value("security.oauth.client.access-token-uri")
+    private String accessTokenUri;
+
+    @Value("entando.auth-service-uri")
+    private String authServiceUri;
+
+    public AuthClient() {
     }
 
     interface UserDetail {
@@ -53,16 +62,16 @@ public class AuthClient {
                 .requestInterceptor(oauth2Interceptor)
                 .encoder(new JacksonEncoder())
                 .decoder(new JacksonDecoder())
-                .target(UserDetail.class, entandoProperties.getAuthServiceUri())
+                .target(UserDetail.class, authServiceUri)
                 .get(userId);
     }
 
     private ClientCredentialsResourceDetails getClientCredentialsResourceDetails() {
         ClientCredentialsResourceDetails resourceDetails = new ClientCredentialsResourceDetails();
         resourceDetails.setAuthenticationScheme(AuthenticationScheme.header);
-        resourceDetails.setClientId(entandoProperties.getClientId());
-        resourceDetails.setClientSecret(entandoProperties.getClientSecret());
-        resourceDetails.setAccessTokenUri(entandoProperties.getAccessTokenUri());
+        resourceDetails.setClientId(clientId);
+        resourceDetails.setClientSecret(clientSecret);
+        resourceDetails.setAccessTokenUri(accessTokenUri);
         return resourceDetails;
     }
 
