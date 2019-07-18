@@ -8,16 +8,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConfigServiceConfiguration {
 
-    @Value("security.oauth.client.client-id")
+    @Value("${security.oauth2.client.client-id}")
     private String clientId;
 
-    @Value("security.oauth.client.client-secret")
+    @Value("${security.oauth2.client.client-secret}")
     private String clientSecret;
 
-    @Value("security.oauth.client.access-token-uri")
+    @Value("${security.oauth2.client.access-token-uri}")
     private String accessTokenUri;
 
-    @Value("entando.config-service-uri")
+    @Value("${entando.config-service-uri}")
     private String configServiceUri;
 
 
