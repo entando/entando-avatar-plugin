@@ -624,8 +624,9 @@
                     <artifactId>jib-maven-plugin</artifactId>
                     <version>${jib-maven-plugin.version}</version>
                     <configuration>
+                      <allowInsecureRegistries>true</allowInsecureRegistries>
                       <from>
-                          <image>openjdk:8-jre-alpine</image>
+                          <image>entando/entando-alpine-base:${project.version}</image>
                       </from>
                       <to>
                           <image>entando/${project.artifactId}:${project.version}</image>
@@ -641,7 +642,7 @@
                       </extraDirectories>
                       <container>
                           <entrypoint>
-                              <shell>sh</shell>
+                              <shell>/bin/bash</shell>
                               <option>-c</option>
                               <arg>/entrypoint.sh</arg>
                           </entrypoint>
