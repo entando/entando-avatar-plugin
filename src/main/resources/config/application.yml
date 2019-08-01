@@ -126,15 +126,6 @@ spring:
 # export SECURITY_OAUTH2_CLIENT_CLIENT_ID="jhipster"
 # export SECURITY_OAUTH2_CLIENT_CLIENT_SECRET="38561a05"
 # ===================================================================
-security:
-    oauth2:
-        client:
-            client-id: avatar-plugin
-            client-secret: da6914b9-c0df-4c48-9213-6ffb44e0db96
-            access-token-uri: http://localhost:9080/auth/realms/entando-development/protocol/openid-connect/token
-        resource:
-            token-info-uri: http://localhost:9080/auth/realms/entando-development/protocol/openid-connect/token/introspect
-
 server:
     servlet:
         context-path: /${spring.application.name}

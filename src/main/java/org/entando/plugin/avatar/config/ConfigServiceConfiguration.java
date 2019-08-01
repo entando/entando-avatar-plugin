@@ -1,6 +1,7 @@
 package org.entando.plugin.avatar.config;
 
 import org.entando.config.ConfigService;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,14 +9,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConfigServiceConfiguration {
 
-    @Value("${security.oauth2.client.client-id}")
+    @Value("${keycloak.resource}")
     private String clientId;
 
-    @Value("${security.oauth2.client.client-secret}")
+    @Value("${keycloak.credentials.secret}")
     private String clientSecret;
 
-    @Value("${security.oauth2.client.access-token-uri}")
-    private String accessTokenUri;
+    @Value("${keycloak.auth-server-url}")
+    private String keycloakAuthServerUrl;
+
+    @Value("${keycloak.realm}")
+    private String keycloakRealm;
 
     @Value("${entando.config-service-uri}")
     private String configServiceUri;
@@ -23,7 +27,9 @@ public class ConfigServiceConfiguration {
 
     @Bean
     public ConfigService<AvatarConfig> configService() {
-        return new ConfigService<>(clientId, clientSecret, accessTokenUri, configServiceUri, AvatarConfig.class);
+        return new ConfigService<>(clientId, clientSecret,
+            keycloakAuthServerUrl + "/realms/" + keycloakRealm + "/protocol/openid-connect/token",
+            configServiceUri, AvatarConfig.class);
     }
 
 }

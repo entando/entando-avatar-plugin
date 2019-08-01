@@ -76,7 +76,7 @@ public class AvatarResource {
 
     @GetMapping("/avatars/image/currentUser")
     public ResponseEntity getCurrentUserAvatar(AuthenticatedUser user, HttpServletResponse response) throws IOException {
-        return this.getImage(user.getUserId(), response);
+        return this.getImage(user.getAccessToken().getPreferredUsername(), response);
     }
 
     private ResponseEntity<?> returnGravatarImage(String userId, HttpServletResponse response) throws IOException {

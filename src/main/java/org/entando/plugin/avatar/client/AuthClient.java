@@ -1,11 +1,11 @@
 /*
  * Copyright 2019-Present Entando Inc. (http://www.entando.com) All rights reserved.
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
@@ -29,19 +29,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthClient {
 
-    @Value("security.oauth.client.client-id")
+    @Value("${keycloak.resource}")
     private String clientId;
 
-    @Value("security.oauth.client.client-secret")
+    @Value("${keycloak.credentials.secret}")
     private String clientSecret;
 
-    @Value("security.oauth.client.access-token-uri")
-    private String accessTokenUri;
+    @Value("${keycloak.realm}")
+    private String keycloakRealm;
+
+    @Value("${keycloak.auth-server-url")
+    private String keycloakAuthSeverUrl;
 
     @Value("entando.auth-service-uri")
     private String authServiceUri;
 
+    private final String keycloakAccessTokenUri;
+
     public AuthClient() {
+        this.keycloakAccessTokenUri =  keycloakAuthSeverUrl + "/realms/" + keycloakRealm + "/protocol/openid-connect/token";
     }
 
     interface UserDetail {
@@ -71,7 +77,7 @@ public class AuthClient {
         resourceDetails.setAuthenticationScheme(AuthenticationScheme.header);
         resourceDetails.setClientId(clientId);
         resourceDetails.setClientSecret(clientSecret);
-        resourceDetails.setAccessTokenUri(accessTokenUri);
+        resourceDetails.setAccessTokenUri(keycloakAccessTokenUri);
         return resourceDetails;
     }
 
