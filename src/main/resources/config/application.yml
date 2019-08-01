@@ -191,7 +191,12 @@ entando:
     config-service-uri: http://localhost:8083/
     widgets-folder: src/main/resources/widgets
 
-
+keycloak:
+    enabled: true
+    auth-server-url: http://localhost:8081/auth
+    realm: entando-development
+    resource: entando-survey
+    credentials.secret: 7b37c57a-6076-4834-ab95-fce93136d358
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class

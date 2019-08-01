@@ -1,8 +1,7 @@
 package org.entando.plugin.avatar.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.entando.entando.web.widget.model.WidgetRequest;
-import org.entando.plugin.avatar.web.rest.errors.InternalServerErrorException;
+import org.entando.plugin.avatar.domain.WidgetRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,15 +17,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class WidgetService {
+public class AvatarWidgetService {
 
     @Value("${entando.widgets-folder}")
     private String widgetFolder;
 
-    private final Logger logger = LoggerFactory.getLogger(WidgetService.class);
+    private final Logger logger = LoggerFactory.getLogger(AvatarWidgetService.class);
     private ObjectMapper objectMapper;
 
-    public WidgetService() {
+    public AvatarWidgetService() {
         this.objectMapper = new ObjectMapper();
     }
 

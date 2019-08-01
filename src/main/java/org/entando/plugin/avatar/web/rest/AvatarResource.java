@@ -1,4 +1,5 @@
 package org.entando.plugin.avatar.web.rest;
+import org.entando.keycloak.security.AuthenticatedUser;
 import org.entando.plugin.avatar.domain.Avatar;
 import org.entando.plugin.avatar.service.AvatarService;
 import org.entando.plugin.avatar.web.rest.errors.BadRequestAlertException;
@@ -16,6 +17,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
@@ -72,12 +74,17 @@ public class AvatarResource {
         return returnLocalImage(userId, response);
     }
 
+    @GetMapping("/avatars/image/currentUser")
+    public ResponseEntity getCurrentUserAvatar(AuthenticatedUser user, HttpServletResponse response) throws IOException {
+        return this.getImage(user.getUserId(), response);
+    }
+
     private ResponseEntity<?> returnGravatarImage(String userId, HttpServletResponse response) throws IOException {
 
         RestTemplate restTemplate = new RestTemplate();
 
         String email = authClient.getUserDetail(userId).getEmail();
-        
+
         ResponseEntity<Resource> gravatarResponse = restTemplate.exchange(
                 getAvatarUrl(email), HttpMethod.GET, null, Resource.class);
 
@@ -131,13 +138,13 @@ public class AvatarResource {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/avatars/image/{username}")
     public ResponseEntity<Void> deleteAvatar(@PathVariable("username") String username) {
         avatarService.deleteByUsername(username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    
+
     /**
      * POST  /avatars : Create a new avatar.
      *

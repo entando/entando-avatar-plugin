@@ -1,7 +1,7 @@
 package org.entando.plugin.avatar.web.rest;
 
-import org.entando.entando.web.widget.model.WidgetRequest;
-import org.entando.plugin.avatar.service.WidgetService;
+import org.entando.plugin.avatar.domain.WidgetRequest;
+import org.entando.plugin.avatar.service.AvatarWidgetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,17 +19,17 @@ public class AvatarWidgetResource {
 
     private final Logger log = LoggerFactory.getLogger(AvatarWidgetResource.class);
 
-    private final WidgetService widgetService;
+    private final AvatarWidgetService avatarWidgetService;
 
-    public AvatarWidgetResource(WidgetService widgetService) {
-        this.widgetService = widgetService;
+    public AvatarWidgetResource(AvatarWidgetService avatarWidgetService) {
+        this.avatarWidgetService = avatarWidgetService;
     }
 
     @GetMapping(value = "/widgets", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllWidgets() {
         log.debug("REST request to get all widgets");
         try {
-            List<WidgetRequest> widgets = widgetService.findAll();
+            List<WidgetRequest> widgets = avatarWidgetService.findAll();
             return ResponseEntity.ok(widgets);
         } catch (IOException e) {
             log.error("An error occurred while retrieving widget definitions",e );
@@ -41,7 +41,7 @@ public class AvatarWidgetResource {
     @PostMapping(value = "/widgets", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity storeWidget(@RequestBody WidgetRequest widgetRequest) {
         log.debug("REST request to store a new widget");
-        widgetService.save(widgetRequest);
+        avatarWidgetService.save(widgetRequest);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 }
