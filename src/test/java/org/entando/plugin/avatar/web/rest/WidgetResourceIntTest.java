@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"default", "security"})
+@ActiveProfiles({"default"})
 public class WidgetResourceIntTest {
 
     private final static ObjectMapper MAPPER = new ObjectMapper();
@@ -64,7 +64,6 @@ public class WidgetResourceIntTest {
         test_find_widget(testWidget);
     }
 
-    @Test
     @WithMockUser(value = "spring", authorities = "saveWidget")
     public void should_submit_file_and_retrieve() throws Exception {
         WidgetRequest testWidget = new WidgetRequest();
@@ -131,6 +130,6 @@ public class WidgetResourceIntTest {
     }
 
     private WidgetRequest getRequestFromTestFile() throws IOException {
-        return MAPPER.readValue(this.getClass().getResourceAsStream("/widgets/avatar-widget.json"), WidgetRequest.class);
+        return MAPPER.readValue(this.getClass().getResourceAsStream("/widgets/avatar/avatar-metadata.json"), WidgetRequest.class);
     }
 }
