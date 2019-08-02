@@ -4,6 +4,5 @@
         "it": "Ciao mondo",
         "en": "Hello world"
     },
-    "group": "free",
-    "customUi": "<h1>Hello World!</h1>"
+    "group": "free"
 }

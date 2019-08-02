@@ -1,4 +1,4 @@
-package org.entando.plugin.avatar.domain;
+package org.entando.plugin.avatar.domain.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -40,6 +40,7 @@ public class AvatarConfigManager {
             config = configService.getConfig();
         } catch (Exception e) {
             logger.error("An error occurred while retrieving configuration from config service", e);
+            configService.updateConfig(config);
         }
         return config;
     }

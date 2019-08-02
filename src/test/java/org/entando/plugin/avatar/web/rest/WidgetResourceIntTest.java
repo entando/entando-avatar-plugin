@@ -2,7 +2,7 @@ package org.entando.plugin.avatar.web.rest;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.entando.plugin.avatar.domain.WidgetRequest;
+import org.entando.plugin.avatar.domain.request.WidgetRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"default", "security"})
-public class AvatarWidgetResourceIntTest {
+public class WidgetResourceIntTest {
 
     private final static ObjectMapper MAPPER = new ObjectMapper();
     private static final String WIDGET_FOLDER = "src/test/resources/widgets";

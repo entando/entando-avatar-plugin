@@ -1,7 +1,7 @@
 package org.entando.plugin.avatar.web.rest;
 
-import org.entando.plugin.avatar.domain.WidgetRequest;
-import org.entando.plugin.avatar.service.AvatarWidgetService;
+import org.entando.plugin.avatar.domain.request.WidgetRequest;
+import org.entando.plugin.avatar.service.WidgetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,21 +15,21 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api")
-public class AvatarWidgetResource {
+public class WidgetResource {
 
-    private final Logger log = LoggerFactory.getLogger(AvatarWidgetResource.class);
+    private final Logger log = LoggerFactory.getLogger(WidgetResource.class);
 
-    private final AvatarWidgetService avatarWidgetService;
+    private final WidgetService widgetService;
 
-    public AvatarWidgetResource(AvatarWidgetService avatarWidgetService) {
-        this.avatarWidgetService = avatarWidgetService;
+    public WidgetResource(WidgetService widgetService) {
+        this.widgetService = widgetService;
     }
 
     @GetMapping(value = "/widgets", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllWidgets() {
         log.debug("REST request to get all widgets");
         try {
-            List<WidgetRequest> widgets = avatarWidgetService.findAll();
+            List<WidgetRequest> widgets = widgetService.findAll();
             return ResponseEntity.ok(widgets);
         } catch (IOException e) {
             log.error("An error occurred while retrieving widget definitions",e );
@@ -37,11 +37,4 @@ public class AvatarWidgetResource {
         }
     }
 
-    @PreAuthorize("hasAuthority('saveWidget')")
-    @PostMapping(value = "/widgets", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity storeWidget(@RequestBody WidgetRequest widgetRequest) {
-        log.debug("REST request to store a new widget");
-        avatarWidgetService.save(widgetRequest);
-        return new ResponseEntity(HttpStatus.CREATED);
-    }
 }

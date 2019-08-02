@@ -11,16 +11,18 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.io.IOUtils;
 import org.entando.plugin.avatar.client.AuthClient;
 import org.entando.plugin.avatar.config.AvatarConfig;
@@ -56,6 +58,7 @@ public class AvatarResource {
         this.authClient = authClient;
     }
 
+    @Secured("avatar-submit")
     @PostMapping("/avatars/image/{userId}")
     public ResponseEntity<?> createAvatar(@PathVariable("userId") String userId,
             @RequestParam(FILE_PARAM) MultipartFile image) throws IOException {
@@ -75,7 +78,7 @@ public class AvatarResource {
     }
 
     @GetMapping("/avatars/image/currentUser")
-    public ResponseEntity getCurrentUserAvatar(AuthenticatedUser user, HttpServletResponse response) throws IOException {
+    public ResponseEntity getCurrentUserAvatar(@NotNull AuthenticatedUser user, HttpServletResponse response) throws IOException {
         return this.getImage(user.getAccessToken().getPreferredUsername(), response);
     }
 
@@ -139,6 +142,7 @@ public class AvatarResource {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Secured("avatar-delete")
     @DeleteMapping("/avatars/image/{username}")
     public ResponseEntity<Void> deleteAvatar(@PathVariable("username") String username) {
         avatarService.deleteByUsername(username);
@@ -152,6 +156,7 @@ public class AvatarResource {
      * @return the ResponseEntity with status 201 (Created) and with body the new avatar, or with status 400 (Bad Request) if the avatar has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
+    @Secured("avatar-submission")
     @PostMapping("/avatars")
     public ResponseEntity<Avatar> createAvatar(@Valid @RequestBody Avatar avatar) throws URISyntaxException {
         log.debug("REST request to save Avatar : {}", avatar);
@@ -173,6 +178,7 @@ public class AvatarResource {
      * or with status 500 (Internal Server Error) if the avatar couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
+    @Secured("avatar-submission")
     @PutMapping("/avatars")
     public ResponseEntity<Avatar> updateAvatar(@Valid @RequestBody Avatar avatar) throws URISyntaxException {
         log.debug("REST request to update Avatar : {}", avatar);
