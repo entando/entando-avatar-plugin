@@ -58,7 +58,7 @@ public class WidgetResourceIntTest {
     }
 
     @Test
-    @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring", authorities = "get-widgets")
     public void should_be_able_to_retrieve_a_widget() throws Exception {
         WidgetRequest testWidget = getRequestFromTestFile();
         test_find_widget(testWidget);
