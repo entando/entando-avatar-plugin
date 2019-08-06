@@ -2,6 +2,7 @@ package org.entando.plugin.avatar.web.rest;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.entando.plugin.avatar.AvatarPluginApp;
 import org.entando.plugin.avatar.domain.request.WidgetRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.entando.keycloak.testutils.WithMockKeycloakUser;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -36,8 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"default"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = AvatarPluginApp.class)
 public class WidgetResourceIntTest {
 
     private final static ObjectMapper MAPPER = new ObjectMapper();
@@ -48,7 +48,6 @@ public class WidgetResourceIntTest {
 
     private MockMvc restAvatarWidgetResource;
 
-
     @Before
     public void setup() {
         restAvatarWidgetResource = MockMvcBuilders
@@ -58,13 +57,14 @@ public class WidgetResourceIntTest {
     }
 
     @Test
-    @WithMockUser(value = "spring", authorities = "get-widgets")
+    @WithMockKeycloakUser(value = "spring", roles = "get-widgets")
     public void should_be_able_to_retrieve_a_widget() throws Exception {
         WidgetRequest testWidget = getRequestFromTestFile();
         test_find_widget(testWidget);
     }
 
-    @WithMockUser(value = "spring", authorities = "saveWidget")
+    @Test
+    @WithMockUser(value = "spring", authorities = "save-widgets")
     public void should_submit_file_and_retrieve() throws Exception {
         WidgetRequest testWidget = new WidgetRequest();
         Map<String, String> titles = new HashMap<>();
