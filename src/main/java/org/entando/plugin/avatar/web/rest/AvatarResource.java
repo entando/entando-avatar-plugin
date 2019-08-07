@@ -1,6 +1,7 @@
 package org.entando.plugin.avatar.web.rest;
 import org.entando.keycloak.security.AuthenticatedUser;
 import org.entando.plugin.avatar.domain.Avatar;
+import org.entando.plugin.avatar.security.roles.AvatarResourceRoles;
 import org.entando.plugin.avatar.service.AvatarService;
 import org.entando.plugin.avatar.web.rest.errors.BadRequestAlertException;
 import org.entando.plugin.avatar.web.rest.util.HeaderUtil;
@@ -36,7 +37,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.entando.plugin.avatar.security.AvatarResourceRoles.*;
+import static org.entando.plugin.avatar.security.roles.AvatarResourceRoles.*;
 
 /**
  * REST controller for managing Avatar.
@@ -79,9 +80,15 @@ public class AvatarResource {
         return returnLocalImage(userId, response);
     }
 
+    @Secured(CREATE_AVATAR)
+    @PostMapping("/avatars/image/currentUser")
+    public ResponseEntity getCurrentUserAvatar(@NotNull AuthenticatedUser user,@RequestParam(FILE_PARAM) MultipartFile image, HttpServletResponse response) throws IOException {
+        return this.createAvatar(user.getUserId(), image);
+    }
+
     @GetMapping("/avatars/image/currentUser")
     public ResponseEntity getCurrentUserAvatar(@NotNull AuthenticatedUser user, HttpServletResponse response) throws IOException {
-        return this.getImage(user.getAccessToken().getPreferredUsername(), response);
+        return this.getImage(user.getUserId(), response);
     }
 
     private ResponseEntity<?> returnGravatarImage(String userId, HttpServletResponse response) throws IOException {

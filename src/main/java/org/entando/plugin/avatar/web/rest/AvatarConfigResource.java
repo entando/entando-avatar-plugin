@@ -16,6 +16,7 @@ package org.entando.plugin.avatar.web.rest;
 import javax.validation.Valid;
 import org.entando.plugin.avatar.config.AvatarConfig;
 import org.entando.plugin.avatar.config.AvatarConfigManager;
+import org.entando.plugin.avatar.security.roles.AvatarConfigResourceRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.entando.plugin.avatar.security.roles.AvatarConfigResourceRoles.UPDATE_CONFIG;
 
 /**
  * REST controller for managing Avatar Plugin Configuration.
@@ -44,7 +47,7 @@ public class AvatarConfigResource {
         return ResponseEntity.ok(configManager.getAvatarConfig());
     }
 
-    @Secured("config-submission")
+    @Secured(UPDATE_CONFIG)
     @PutMapping("/config")
     public ResponseEntity<AvatarConfig> updateConfig(@Valid @RequestBody AvatarConfig config) {
         configManager.updateAvatarConfig(config);

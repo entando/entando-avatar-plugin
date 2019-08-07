@@ -1,5 +1,6 @@
 package org.entando.plugin.avatar.config;
 
+import org.entando.keycloak.security.SecurityConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 @Configuration
 @Import(SecurityProblemSupport.class)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
     @Value("${keycloak.resource}")
     private String clientId;
 
@@ -39,7 +41,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.exceptionHandling()
+        http.csrf().disable()
+            .exceptionHandling()
             .authenticationEntryPoint(problemSupport)
             .accessDeniedHandler(problemSupport);
     }

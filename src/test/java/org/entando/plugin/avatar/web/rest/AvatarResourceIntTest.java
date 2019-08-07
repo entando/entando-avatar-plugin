@@ -1,10 +1,12 @@
 package org.entando.plugin.avatar.web.rest;
 
+import org.entando.keycloak.testutils.WithMockKeycloakUser;
 import org.entando.plugin.avatar.AvatarPluginApp;
 import org.entando.plugin.avatar.client.AuthClient;
 import org.entando.plugin.avatar.config.AvatarConfigManager;
 import org.entando.plugin.avatar.domain.Avatar;
 import org.entando.plugin.avatar.repository.AvatarRepository;
+import org.entando.plugin.avatar.security.roles.AvatarResourceRoles;
 import org.entando.plugin.avatar.service.AvatarService;
 import org.entando.plugin.avatar.web.rest.errors.ExceptionTranslator;
 
@@ -24,14 +26,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.validation.Validator;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 
+import static org.entando.plugin.avatar.security.roles.AvatarResourceRoles.*;
 import static org.entando.plugin.avatar.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -51,6 +56,9 @@ public class AvatarResourceIntTest {
     private static final byte[] UPDATED_IMAGE = TestUtil.createByteArray(1, "1");
     private static final String DEFAULT_IMAGE_CONTENT_TYPE = "image/jpg";
     private static final String UPDATED_IMAGE_CONTENT_TYPE = "image/png";
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
     @Autowired
     private AvatarRepository avatarRepository;
@@ -86,14 +94,10 @@ public class AvatarResourceIntTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        final AvatarResource avatarResource = new AvatarResource(configManager, avatarService, authClient);
-        this.restAvatarMockMvc = MockMvcBuilders.standaloneSetup(avatarResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter)
-            .setValidator(validator).build();
+        this.restAvatarMockMvc = MockMvcBuilders
+            .webAppContextSetup(webApplicationContext)
+            .apply(springSecurity())
+            .build();
     }
 
     /**
@@ -117,6 +121,7 @@ public class AvatarResourceIntTest {
 
     @Test
     @Transactional
+    @WithMockKeycloakUser(roles = {CREATE_AVATAR})
     public void createAvatar() throws Exception {
         int databaseSizeBeforeCreate = avatarRepository.findAll().size();
 
@@ -137,6 +142,7 @@ public class AvatarResourceIntTest {
 
     @Test
     @Transactional
+    @WithMockKeycloakUser(roles = {CREATE_AVATAR})
     public void createAvatarWithExistingId() throws Exception {
         int databaseSizeBeforeCreate = avatarRepository.findAll().size();
 
@@ -156,6 +162,7 @@ public class AvatarResourceIntTest {
 
     @Test
     @Transactional
+    @WithMockKeycloakUser(roles = CREATE_AVATAR)
     public void checkUsernameIsRequired() throws Exception {
         int databaseSizeBeforeTest = avatarRepository.findAll().size();
         // set the field null
@@ -187,7 +194,7 @@ public class AvatarResourceIntTest {
             .andExpect(jsonPath("$.[*].imageContentType").value(hasItem(DEFAULT_IMAGE_CONTENT_TYPE)))
             .andExpect(jsonPath("$.[*].image").value(hasItem(Base64Utils.encodeToString(DEFAULT_IMAGE))));
     }
-    
+
     @Test
     @Transactional
     public void getAvatar() throws Exception {
@@ -214,6 +221,7 @@ public class AvatarResourceIntTest {
 
     @Test
     @Transactional
+    @WithMockKeycloakUser(roles = {UPDATE_AVATAR})
     public void updateAvatar() throws Exception {
         // Initialize the database
         avatarService.save(avatar);
@@ -245,6 +253,7 @@ public class AvatarResourceIntTest {
 
     @Test
     @Transactional
+    @WithMockKeycloakUser(roles = UPDATE_AVATAR)
     public void updateNonExistingAvatar() throws Exception {
         int databaseSizeBeforeUpdate = avatarRepository.findAll().size();
 
@@ -263,6 +272,7 @@ public class AvatarResourceIntTest {
 
     @Test
     @Transactional
+    @WithMockKeycloakUser(roles = DELETE_AVATAR)
     public void deleteAvatar() throws Exception {
         // Initialize the database
         avatarService.save(avatar);

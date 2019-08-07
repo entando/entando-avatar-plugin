@@ -1,4 +1,4 @@
-package org.entando.plugin.avatar.security;
+package org.entando.plugin.avatar.security.roles;
 
 public interface AvatarResourceRoles {
     final String CREATE_AVATAR = "avatar-submit";
