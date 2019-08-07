@@ -1,21 +1,23 @@
 package org.entando.plugin.avatar.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.resource.BaseOAuth2ProtectedResourceDetails;
-import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.common.AuthenticationScheme;
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
+@Order(1)
 @Configuration
-public class SecurityConfiguration {
-
+@Import(SecurityProblemSupport.class)
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${keycloak.resource}")
     private String clientId;
 
@@ -27,6 +29,20 @@ public class SecurityConfiguration {
 
     @Value("${keycloak.auth-server-url")
     private String keycloakAuthSeverUrl;
+
+
+    private final SecurityProblemSupport problemSupport;
+
+    public SecurityConfiguration(SecurityProblemSupport problemSupport) {
+        this.problemSupport = problemSupport;
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.exceptionHandling()
+            .authenticationEntryPoint(problemSupport)
+            .accessDeniedHandler(problemSupport);
+    }
 
     /**
      * This OAuth2RestTemplate is only used by AuthorizationHeaderUtil that is currently used by TokenRelayRequestInterceptor

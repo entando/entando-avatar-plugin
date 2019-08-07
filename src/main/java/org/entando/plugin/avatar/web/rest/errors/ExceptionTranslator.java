@@ -1,7 +1,9 @@
 package org.entando.plugin.avatar.web.rest.errors;
 
+import org.entando.keycloak.exception.ForbiddenException;
+import org.entando.keycloak.exception.KeycloakException;
+import org.entando.keycloak.exception.UnauthorizedException;
 import org.entando.plugin.avatar.web.rest.util.HeaderUtil;
-
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -109,4 +111,32 @@ public class ExceptionTranslator implements ProblemHandling {
             .build();
         return create(ex, problem, request);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleKeycloakUnauthorized(UnauthorizedException ex, NativeWebRequest request) {
+        Problem problem = Problem.builder()
+            .withStatus(Status.UNAUTHORIZED)
+            .with(MESSAGE_KEY, "Unauthorized request")
+            .build();
+        return create(ex, problem, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleKeycloakUnauthorized(ForbiddenException ex, NativeWebRequest request) {
+        Problem problem = Problem.builder()
+            .withStatus(Status.FORBIDDEN)
+            .with(MESSAGE_KEY, "Forbidden request")
+            .build();
+        return create(ex, problem, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleKeycloakUnauthorized(KeycloakException ex, NativeWebRequest request) {
+        Problem problem = Problem.builder()
+            .withStatus(Status.INTERNAL_SERVER_ERROR)
+            .with(MESSAGE_KEY, "Generic Keycloak exception")
+            .build();
+        return create(ex, problem, request);
+    }
+
 }

@@ -60,41 +60,25 @@ public class WidgetResourceIntTest {
     @WithMockKeycloakUser(value = "spring", roles = "get-widgets")
     public void should_be_able_to_retrieve_a_widget() throws Exception {
         WidgetRequest testWidget = getRequestFromTestFile();
-        test_find_widget(testWidget);
+        ResultActions actions = restAvatarWidgetResource.perform(get("/api/widgets"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.[*].code").value(hasItem(testWidget.getCode())))
+            .andExpect(jsonPath("$.[*].group").value(hasItem(testWidget.getGroup())))
+            .andExpect(jsonPath("$.[*].customUi").value(hasItem(testWidget.getCustomUi())));
+
+        for(String key: testWidget.getTitles().keySet()) {
+            actions.andExpect(jsonPath("$.[*].titles." + key).value(hasItem(testWidget.getTitles().get(key))));
+        }
     }
 
     @Test
-    @WithMockUser(value = "spring", authorities = "save-widgets")
-    public void should_submit_file_and_retrieve() throws Exception {
-        WidgetRequest testWidget = new WidgetRequest();
-        Map<String, String> titles = new HashMap<>();
-        titles.put("en", "test-widget");
-
-        testWidget.setCode("test-widget");
-        testWidget.setTitles(titles);
-        testWidget.setGroup("free");
-        testWidget.setCustomUi("<h1>Test Widget</h1>");
-
-        try {
-            test_unauthorized_widget_submission(testWidget);
-            test_find_widget(testWidget);
-        } finally {
-            clearWidgetFiles(testWidget.getCode());
-        }
-
+    public void should_return_unauthorized() throws Exception {
+        restAvatarWidgetResource.perform(get("/api/widgets"))
+            .andExpect(status().isUnauthorized());
     }
 
     private void test_find_widget(WidgetRequest widget) throws Exception {
-       ResultActions actions = restAvatarWidgetResource.perform(get("/api/widgets"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$.[*].code").value(hasItem(widget.getCode())))
-            .andExpect(jsonPath("$.[*].group").value(hasItem(widget.getGroup())))
-            .andExpect(jsonPath("$.[*].customUi").value(hasItem(widget.getCustomUi())));
-
-       for(String key: widget.getTitles().keySet()) {
-           actions.andExpect(jsonPath("$.[*].titles." + key).value(hasItem(widget.getTitles().get(key))));
-       }
 
 
     }

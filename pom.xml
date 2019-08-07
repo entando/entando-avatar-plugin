@@ -160,7 +160,7 @@
         </dependency>
         <dependency>
             <groupId>org.entando</groupId>
-            <artifactId>web-commons</artifactId>
+            <artifactId>keycloak-connector</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
