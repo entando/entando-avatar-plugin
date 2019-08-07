@@ -26,7 +26,6 @@ public class WidgetResource {
         this.widgetService = widgetService;
     }
 
-    @Secured("get-widgets")
     @GetMapping(value = "/widgets", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllWidgets() {
         log.debug("REST request to get all widgets");

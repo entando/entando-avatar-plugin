@@ -23,7 +23,7 @@ import java.util.Collection;
 
 @SpringBootApplication
 @EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
-@ComponentScan({"org.entando"})
+@ComponentScan(value = {"org.entando"})
 public class AvatarPluginApp {
 
     private static final Logger log = LoggerFactory.getLogger(AvatarPluginApp.class);

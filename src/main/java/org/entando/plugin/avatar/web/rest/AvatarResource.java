@@ -36,6 +36,8 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import static org.entando.plugin.avatar.security.AvatarResourceRoles.*;
+
 /**
  * REST controller for managing Avatar.
  */
@@ -58,7 +60,7 @@ public class AvatarResource {
         this.authClient = authClient;
     }
 
-    @Secured("avatar-submit")
+    @Secured(CREATE_AVATAR)
     @PostMapping("/avatars/image/{userId}")
     public ResponseEntity<?> createAvatar(@PathVariable("userId") String userId,
             @RequestParam(FILE_PARAM) MultipartFile image) throws IOException {
@@ -156,7 +158,7 @@ public class AvatarResource {
      * @return the ResponseEntity with status 201 (Created) and with body the new avatar, or with status 400 (Bad Request) if the avatar has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @Secured("avatar-submission")
+    @Secured(CREATE_AVATAR)
     @PostMapping("/avatars")
     public ResponseEntity<Avatar> createAvatar(@Valid @RequestBody Avatar avatar) throws URISyntaxException {
         log.debug("REST request to save Avatar : {}", avatar);
@@ -178,7 +180,7 @@ public class AvatarResource {
      * or with status 500 (Internal Server Error) if the avatar couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @Secured("avatar-submission")
+    @Secured(UPDATE_AVATAR)
     @PutMapping("/avatars")
     public ResponseEntity<Avatar> updateAvatar(@Valid @RequestBody Avatar avatar) throws URISyntaxException {
         log.debug("REST request to update Avatar : {}", avatar);
@@ -221,6 +223,7 @@ public class AvatarResource {
      * @param id the id of the avatar to delete
      * @return the ResponseEntity with status 200 (OK)
      */
+    @Secured(DELETE_AVATAR)
     @DeleteMapping("/avatars/{id}")
     public ResponseEntity<Void> deleteAvatar(@PathVariable Long id) {
         log.debug("REST request to delete Avatar : {}", id);
