@@ -1,5 +1,7 @@
 package org.entando.plugin.avatar.service.impl;
 
+import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
+
 import org.entando.plugin.avatar.service.AvatarService;
 import org.entando.plugin.avatar.web.rest.errors.BadRequestAlertException;
 import org.entando.plugin.avatar.config.AvatarPluginConfig;
@@ -28,9 +30,6 @@ import javax.imageio.ImageIO;
 @Service
 @Transactional
 public class AvatarServiceImpl implements AvatarService {
-
-    private static final String ENTITY_NAME = "avatarPluginAvatar";
-;
 
     private final Logger log = LoggerFactory.getLogger(AvatarServiceImpl.class);
 
@@ -107,12 +106,11 @@ public class AvatarServiceImpl implements AvatarService {
         String extension = fileName.substring(fileName.lastIndexOf('.') + 1).trim();
 
         if (!avatarConfig.getImageTypes().contains(extension)) {
-            throw new BadRequestAlertException("Invalid image type: " + extension, ENTITY_NAME, "invalidtype");
+            throw new AvatarUploadException("Invalid image type: " + extension);
         }
 
         if (image.getSize() > avatarConfig.getImageMaxSize() * 1024) {
-            throw new BadRequestAlertException("Image size too big. Max allowed " + avatarConfig.getImageMaxSize() + " MB",
-                    ENTITY_NAME, "toobig");
+            throw new AvatarUploadException("Image size too big. Max allowed " + avatarConfig.getImageMaxSize() + " MB");
         }
 
         Avatar avatar = new Avatar();
@@ -121,7 +119,7 @@ public class AvatarServiceImpl implements AvatarService {
             BufferedImage bufImg = ImageIO.read(in);
             if (bufImg.getWidth() != avatarConfig.getImageWidth()
                     || bufImg.getHeight() != avatarConfig.getImageHeight()) {
-                throw new BadRequestAlertException("Wrong image dimensions", ENTITY_NAME, "invaliddimensions");
+                throw new AvatarUploadException("Wrong image dimensions");
             }
 
             try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {

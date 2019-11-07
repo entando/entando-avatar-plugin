@@ -7,6 +7,7 @@ import org.entando.plugin.avatar.config.AvatarPluginConfigManager;
 import org.entando.plugin.avatar.domain.Avatar;
 import org.entando.plugin.avatar.domain.AvatarStyle;
 import org.entando.plugin.avatar.service.AvatarService;
+import org.entando.plugin.avatar.service.impl.AvatarUploadException;
 import org.entando.plugin.avatar.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
@@ -68,11 +69,15 @@ public class AvatarResource {
     }
 
     @PostMapping("/avatars/image/{userId}")
-    public ResponseEntity<?> createAvatar(@PathVariable("userId") String userId,
+    public ResponseEntity createAvatar(@PathVariable("userId") String userId,
             @RequestParam(FILE_PARAM) MultipartFile image) throws IOException {
 
-        avatarService.upload(userId, image);
-        return ResponseEntity.ok().build();
+        try {
+            avatarService.upload(userId, image);
+            return ResponseEntity.ok().build();
+        } catch (AvatarUploadException exception) {
+            throw new BadRequestAlertException(exception.getMessage(), ENTITY_NAME, "upload");
+        }
     }
 
     @GetMapping("/avatars/image/{userId}")
