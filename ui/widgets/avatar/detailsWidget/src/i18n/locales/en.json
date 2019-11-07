@@ -1,0 +1,17 @@
+{
+  "common": {
+    "couldNotFetchData": "Unfortunately we could not fetch entity data",
+    "widgetName": "Details about '{{widgetNamePlaceholder}}'",
+    "name": "Name",
+    "value": "Value",
+    "loading": "Loading...",
+    "missingId": "Please provide avatar ID"
+  },
+  "entities": {
+    "avatar": {
+      "id": "ID",
+      "username": "entities.avatar.username",
+      "image": "entities.avatar.image"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+version: entando.org/v1alpha1
+code: avatarPlugin_bundle
+description: This is the avatarPlugin bundle
+
+components:
+  service:
+    image: FIXME
+    ingressPath: /avatarPlugin
+    healthCheckPath: /actuator/health
+    dbms: postgresql
+    roles:
+    - name: avatarPlugin-admin
+      code: "avatarPlugin-admin"
+    - name: avatar-admin
+      code: "avatar-admin"
+# entando-needle-descriptor-add-roles - Entando blueprint will add roles here
+
+    permissions: []
+
+  widgets:
+    -ui/widgets/avatar/tableWidget/table-widget.yaml
+    -ui/widgets/avatar/detailsWidget/details-widget.yaml
+    -ui/widgets/avatar/formWidget/form-widget.yaml
+# entando-needle-descriptor-add-widgets - Entando blueprint will add widget bundle files here
+
+  pageModels:
+
+  contentTypes:
+
+  contentModels:

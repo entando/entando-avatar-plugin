@@ -4,23 +4,23 @@
     "relationships": [],
     "fields": [
         {
-            "fieldName": "image",
-            "fieldType": "byte[]",
-            "fieldTypeBlobContent": "image"
-        },
-        {
             "fieldName": "username",
             "fieldType": "String",
             "fieldValidateRules": [
                 "required",
                 "unique"
             ]
+        },
+        {
+            "fieldName": "image",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "image"
         }
     ],
-    "changelogDate": "20190412092000",
+    "changelogDate": "20191107101303",
     "dto": "no",
     "searchEngine": false,
-    "service": "serviceClass",
+    "service": "serviceImpl",
     "entityTableName": "avatar",
     "databaseType": "sql",
     "jpaMetamodelFiltering": false,

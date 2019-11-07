@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -33,7 +31,7 @@ public class WidgetResource {
             List<WidgetRequest> widgets = widgetService.findAll();
             return ResponseEntity.ok(widgets);
         } catch (IOException e) {
-            log.error("An error occurred while retrieving widget definitions",e );
+            log.error("An error occurred while retrieving widget definitions", e);
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

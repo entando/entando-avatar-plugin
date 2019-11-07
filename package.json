@@ -1,17 +1,24 @@
 {
-    "name": "avatar-plugin",
-    "version": "0.0.0",
-    "description": "Description for avatarPlugin",
-    "private": true,
-    "license": "UNLICENSED",
-    "cacheDirectories": [
-        "node_modules"
-    ],
-    "devDependencies": {
-        "generator-jhipster-entando": "0.0.0",
-        "generator-jhipster": "5.8.2"
-    },
-    "engines": {
-        "node": ">=8.9.0"
-    }
+  "name": "avatar-plugin",
+  "version": "0.0.0",
+  "description": "Description for avatarPlugin",
+  "private": true,
+  "license": "UNLICENSED",
+  "cacheDirectories": [
+    "node_modules"
+  ],
+  "devDependencies": {
+    "generator-jhipster-entando": "0.0.0",
+    "generator-jhipster": "6.3.0",
+    "@openapitools/openapi-generator-cli": "0.0.19-4.1.2"
+  },
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "scripts": {
+    "install-build-bundle": "npm run install-widgets && npm run build-widgets && npm run bundle-widgets",
+    "install-widgets": "chmod a+x installWidgets.sh && ./installWidgets.sh",
+    "build-widgets": "chmod a+x buildWidgets.sh && ./buildWidgets.sh",
+    "bundle-widgets": "chmod a+x buildBundle.sh && ./buildBundle.sh"
+  }
 }

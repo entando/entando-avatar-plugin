@@ -1,0 +1,7 @@
+version: 0.0.1
+code: avatar-form-widget
+titles:
+    en:  Avatar Table Widget
+    it:  Avatar Table Widget
+group: free
+customUiPath: avatar-form-widget.ftl

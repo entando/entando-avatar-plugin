@@ -1,0 +1,13 @@
+{
+  "common": {
+    "couldNotFetchData": "Unfortunately we could not fetch entity data"
+  },
+  "entities": {
+    "avatar": {
+      "noItems": "No avatars available",
+      "id": "ID",
+      "username": "entities.avatar.username",
+      "image": "entities.avatar.image"
+    }
+  }
+}

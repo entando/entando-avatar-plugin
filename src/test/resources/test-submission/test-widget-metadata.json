@@ -1,9 +1,0 @@
-{
-    "code": "test-avatar-widget",
-    "titles": {
-        "it": "Avatar widget",
-        "en": "Avatar widget"
-    },
-    "group": "free",
-    "customUi": "<avatar name='test-user'></avatar>"
-}

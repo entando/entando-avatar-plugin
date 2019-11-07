@@ -15,128 +15,132 @@
 # ===================================================================
 
 feign:
-    hystrix:
-        enabled: true
-#    client:
-#        config:
-#            default:
-#                connectTimeout: 5000
-#                readTimeout: 5000
+  hystrix:
+    enabled: true
+  # client:
+  #     config:
+  #         default:
+  #             connectTimeout: 5000
+  #             readTimeout: 5000
 
 # See https://github.com/Netflix/Hystrix/wiki/Configuration
 hystrix:
-    command:
-        default:
-            execution:
-                isolation:
-                    strategy: SEMAPHORE
-# See https://github.com/spring-cloud/spring-cloud-netflix/issues/1330
-#                    thread:
-#                        timeoutInMilliseconds: 10000
-    shareSecurityContext: true
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: SEMAPHORE
+          # See https://github.com/spring-cloud/spring-cloud-netflix/issues/1330
+          # thread:
+          #     timeoutInMilliseconds: 10000
+  shareSecurityContext: true
 
 management:
-    endpoints:
-        web:
-            base-path: /management
-            exposure:
-                include: ["configprops", "env", "health", "info", "threaddump", "logfile", "jhi-metrics", "prometheus" ]
-    endpoint:
-        health:
-            show-details: when-authorized
-        jhi-metrics:
-            enabled: true
-    info:
-        git:
-            mode: full
+  endpoints:
+    web:
+      base-path: /management
+      exposure:
+        include: ['configprops', 'env', 'health', 'info', 'jhimetrics', 'logfile', 'loggers', 'prometheus', 'threaddump']
+  endpoint:
     health:
-        mail:
-            enabled: false # When using the MailService, configure an SMTP server and set this to true
-    metrics:
-        export:
-            # Prometheus is the default metrics backend
-            prometheus:
-                enabled: true
-                step: 60
-        binders:
-            jvm:
-                enabled: true
-            processor:
-                enabled: true
-            uptime:
-                enabled: true
-            logback:
-                enabled: true
-            files:
-                enabled: true
-            integration:
-                enabled: true
-        distribution:
-            percentiles-histogram:
-                all: true
-            percentiles:
-                all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
-        web:
-            server:
-                auto-time-requests: true
-    security:
-      enabled: false
+      show-details: when-authorized
+      roles: 'ROLE_ADMIN'
+    jhimetrics:
+      enabled: true
+  info:
+    git:
+      mode: full
+  health:
+    mail:
+      enabled: false # When using the MailService, configure an SMTP server and set this to true
+  metrics:
+    export:
+      # Prometheus is the default metrics backend
+      prometheus:
+        enabled: true
+        step: 60
+    enable:
+      http: true
+      jvm: true
+      logback: true
+      process: true
+      system: true
+    distribution:
+      percentiles-histogram:
+        all: true
+      percentiles:
+        all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
+    tags:
+      application: ${spring.application.name}
+    web:
+      server:
+        auto-time-requests: true
 
 spring:
-    application:
-        name: avatarPlugin
-    profiles:
-        # The commented value for `active` can be replaced with valid Spring profiles to load.
-        # Otherwise, it will be filled in by maven when building the WAR file
-        # Either way, it can be overridden by `--spring.profiles.active` value passed in the commandline or `-Dspring.profiles.active` set in `JAVA_OPTS`
-        active: #spring.profiles.active#
+  application:
+    name: avatarPlugin
+  profiles:
+    # The commented value for `active` can be replaced with valid Spring profiles to load.
+    # Otherwise, it will be filled in by maven when building the JAR file
+    # Either way, it can be overridden by `--spring.profiles.active` value passed in the commandline or `-Dspring.profiles.active` set in `JAVA_OPTS`
+    active: #spring.profiles.active#
+  jmx:
+    enabled: false
+  data:
     jpa:
-        open-in-view: false
-        properties:
-            hibernate.jdbc.time_zone: UTC
-        hibernate:
-            ddl-auto: none
-            naming:
-                physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-    messages:
-        basename: i18n/messages
-    mvc:
-        favicon:
-            enabled: false
-    thymeleaf:
-        mode: HTML
+      repositories:
+        bootstrap-mode: deferred
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate.jdbc.time_zone: UTC
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+  messages:
+    basename: i18n/messages
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    favicon:
+      enabled: false
+  task:
+    execution:
+      thread-name-prefix: avatar-plugin-task-
+      pool:
+        core-size: 2
+        max-size: 50
+        queue-capacity: 10000
+    scheduling:
+      thread-name-prefix: avatar-plugin-scheduling-
+      pool:
+        size: 2
+  thymeleaf:
+    mode: HTML
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: http://test-keycloak.192.168.1.9.nip.io/auth/realms/entando
+        registration:
+          oidc:
+            client-id: test-plugin-a-server
+            client-secret: dcdac4f8-a20c-4ee2-84f2-9479f5323bf3
 
-# ===================================================================
-# OpenID Connect Settings. Default settings are for Keycloak in Docker.
-# Start Keycloak using `docker-compose -f src/main/docker/keycloak.yml up`.
-#
-# To use Okta, your settings should resemble the following:
-#
-# accessTokenUri: https://{yourOktaDomain}.com/oauth2/default/v1/token
-# userAuthorizationUri: https://{yourOktaDomain}.com/oauth2/default/v1/authorize
-# clientId: {copy after creating an OIDC app}
-# clientSecret: {copy after creating an OIDC app}
-# userInfoUri: https://{yourOktaDomain}.com/oauth2/default/v1/userinfo
-# tokenInfoUri: https://{yourOktaDomain}.com/oauth2/default/v1/introspect
-#
-# You can also override these properties using environment variables.
-# For example:
-#
-# export SECURITY_OAUTH2_CLIENT_CLIENT_ID="jhipster"
-# export SECURITY_OAUTH2_CLIENT_CLIENT_SECRET="38561a05"
-# ===================================================================
 server:
-    servlet:
-        context-path: /${spring.application.name}
-        session:
-            cookie:
-                http-only: true
+  servlet:
+    context-path: /services/${spring.application.name}
+    session:
+      cookie:
+        http-only: true
 
 # Properties to be exposed on the /info management endpoint
 info:
-    # Comma separated list of profiles that will trigger the ribbon to show
-    display-ribbon-on-profiles: "dev"
+  # Comma separated list of profiles that will trigger the ribbon to show
+  display-ribbon-on-profiles: 'dev'
 
 # ===================================================================
 # JHipster specific properties
@@ -145,49 +149,41 @@ info:
 # ===================================================================
 
 jhipster:
-    async:
-        core-pool-size: 2
-        max-pool-size: 50
-        queue-capacity: 10000
-    # By default CORS is disabled. Uncomment to enable.
-    #cors:
-        #allowed-origins: "*"
-        #allowed-methods: "*"
-        #allowed-headers: "*"
-        #exposed-headers: "Authorization,Link,X-Total-Count"
-        #allow-credentials: true
-        #max-age: 1800
-    mail:
-        from: avatarPlugin@localhost
-    swagger:
-        default-include-pattern: /api/.*
-        title: avatarPlugin API
-        description: avatarPlugin API documentation
-        version: 0.0.1
-        terms-of-service-url:
-        contact-name:
-        contact-url:
-        contact-email:
-        license:
-        license-url:
+  clientApp:
+    name: 'avatarPluginApp'
+  # By default CORS is disabled. Uncomment to enable.
+  # cors:
+  #     allowed-origins: "*"
+  #     allowed-methods: "*"
+  #     allowed-headers: "*"
+  #     exposed-headers: "Authorization,Link,X-Total-Count"
+  #     allow-credentials: true
+  #     max-age: 1800
+  mail:
+    from: avatarPlugin@localhost
+  swagger:
+    default-include-pattern: /api/.*
+    title: avatarPlugin API
+    description: avatarPlugin API documentation
+    version: 0.0.1
+    terms-of-service-url:
+    contact-name:
+    contact-url:
+    contact-email:
+    license:
+    license-url:
 
 # ===================================================================
 # Entando specific properties
-# Add your own application properties here, see the ApplicationProperties class
-# to have type-safe configuration, like in the JHipsterProperties above
 # ===================================================================
 
 entando:
-    auth-service-uri: http://localhost:8082/
-    config-service-uri: http://localhost:8083/
-    widgets-folder: src/main/resources/widgets
-
-keycloak:
-    enabled: true
-    auth-server-url: http://localhost:8081/auth
-    realm: entando-development
-    resource: entando-survey
-    credentials.secret: 7b37c57a-6076-4834-ab95-fce93136d358
+  client-id: ${KEYCLOAK_CLIENT_ID:test-plugin-a-server}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:dcdac4f8-a20c-4ee2-84f2-9479f5323bf3}
+  access-token-uri: ${TOKEN_SERVICE:http://test-keycloak.192.168.1.9.nip.io/auth/realms/entando}/protocol/openid-connect/token
+  auth-service-uri: ${ENTANDO_AUTH:http://eti.192.168.1.9.nip.io/user-mgmt}
+  config-service-uri: ${ENTANDO_CONFIG:http://test-plugin-a.192.168.1.9.nip.io/config-service}
+  widgets-folder: src/main/resources/widgets
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class
