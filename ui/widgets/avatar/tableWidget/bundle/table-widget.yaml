@@ -1,0 +1,7 @@
+version: 0.0.1
+code: avatar-table-widget
+titles:
+    en:  Avatar Table Widget
+    it:  Avatar Table Widget
+group: free
+customUiPath: avatar-table-widget.ftl

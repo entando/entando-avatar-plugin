@@ -1,6 +1,7 @@
 package org.entando.plugin.avatar.repository;
 
 import java.util.Optional;
+
 import org.entando.plugin.avatar.domain.Avatar;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;

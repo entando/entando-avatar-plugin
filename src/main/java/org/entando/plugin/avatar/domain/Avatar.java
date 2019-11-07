@@ -1,6 +1,4 @@
 package org.entando.plugin.avatar.domain;
-
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -8,7 +6,6 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * A Avatar.
@@ -19,7 +16,7 @@ import java.util.Objects;
 public class Avatar implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
@@ -90,19 +87,15 @@ public class Avatar implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Avatar)) {
             return false;
         }
-        Avatar avatar = (Avatar) o;
-        if (avatar.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), avatar.getId());
+        return id != null && id.equals(((Avatar) o).id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return 31;
     }
 
     @Override

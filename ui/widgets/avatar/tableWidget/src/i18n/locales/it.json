@@ -1,0 +1,13 @@
+{
+  "common": {
+    "couldNotFetchData": "Errore durante la connessione al server"
+  },
+  "entities": {
+    "avatar": {
+      "noItems": "Nessun avatar disponibile",
+      "id": "ID",
+      "username": "entities.avatar.username",
+      "image": "entities.avatar.image"
+    }
+  }
+}

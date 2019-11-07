@@ -2,114 +2,91 @@ package org.entando.plugin.avatar.config;
 
 import org.entando.plugin.avatar.security.*;
 
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.entando.plugin.avatar.security.oauth2.AudienceValidator;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.client.OAuth2ClientContext;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import java.util.*;
+import org.entando.plugin.avatar.security.oauth2.JwtAuthorityExtractor;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
-import java.util.Collection;
-import java.util.Map;
-
-@Configuration
-@EnableResourceServer
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Import(SecurityProblemSupport.class)
-public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
+    private String issuerUri;
+
+    private final JwtAuthorityExtractor jwtAuthorityExtractor;
     private final SecurityProblemSupport problemSupport;
 
-    private final ResourceServerProperties resourceServerProperties;
-
-    public SecurityConfiguration(SecurityProblemSupport problemSupport, ResourceServerProperties resourceServerProperties) {
+    public SecurityConfiguration(JwtAuthorityExtractor jwtAuthorityExtractor, SecurityProblemSupport problemSupport) {
         this.problemSupport = problemSupport;
-        this.resourceServerProperties = resourceServerProperties;
+        this.jwtAuthorityExtractor = jwtAuthorityExtractor;
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
+        // @formatter:off
         http
             .csrf()
             .disable()
             .exceptionHandling()
-            .authenticationEntryPoint(problemSupport)
             .accessDeniedHandler(problemSupport)
         .and()
             .headers()
+            .contentSecurityPolicy("default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:")
+        .and()
+            .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+        .and()
+            .featurePolicy("geolocation 'none'; midi 'none'; sync-xhr 'none'; microphone 'none'; camera 'none'; magnetometer 'none'; gyroscope 'none'; speaker 'none'; fullscreen 'self'; payment 'none'")
+        .and()
             .frameOptions()
-            .disable()
+            .deny()
         .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
             .authorizeRequests()
+            .antMatchers("/api/auth-info").permitAll()
             .antMatchers("/api/**").authenticated()
             .antMatchers("/management/health").permitAll()
             .antMatchers("/management/info").permitAll()
-            .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN);
-
+            .antMatchers("/management/prometheus").permitAll()
+            .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
+        .and()
+            .oauth2ResourceServer()
+                .jwt()
+                .jwtAuthenticationConverter(jwtAuthorityExtractor)
+                .and()
+            .and()
+                .oauth2Client();
+        // @formatter:on
     }
 
-    @Override
-    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
 
-        RemoteTokenServices tokenServices = new RemoteTokenServices();
-        tokenServices.setClientId(resourceServerProperties.getClientId());
-        tokenServices.setClientSecret(resourceServerProperties.getClientSecret());
-        tokenServices.setCheckTokenEndpointUrl(resourceServerProperties.getTokenInfoUri());
-        tokenServices.setAccessTokenConverter(new KeycloakAccessTokenConverter(resourceServerProperties));
-
-        resources.resourceId(resourceServerProperties.getResourceId());
-        resources.tokenServices(tokenServices);
-    }
-
-    public static class KeycloakAccessTokenConverter extends DefaultAccessTokenConverter {
-
-        private final ResourceServerProperties resourceServerProperties;
-
-        KeycloakAccessTokenConverter(ResourceServerProperties resourceServerProperties) {
-            this.resourceServerProperties = resourceServerProperties;
-        }
-
-        @Override
-        public OAuth2Authentication extractAuthentication(Map<String, ?> map) {
-            OAuth2Authentication oAuth2Authentication = super.extractAuthentication(map);
-            Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) oAuth2Authentication.getOAuth2Request().getAuthorities();
-            if (map.containsKey("resource_access")) {
-                Map<String, Object> resource_access = (Map<String, Object>) map.get("resource_access");
-                if(resource_access.containsKey(this.resourceServerProperties.getClientId())) {
-                    Map<String, Object> avatarPluginResource = (Map<String, Object>) resource_access.get(this.resourceServerProperties.getClientId());
-                    if (avatarPluginResource.containsKey("roles")) {
-                        ((Collection<String>) avatarPluginResource.get("roles")).forEach(r -> authorities.add(new SimpleGrantedAuthority(r)));
-                    }
-                }
-            }
-            return new OAuth2Authentication(oAuth2Authentication.getOAuth2Request(),oAuth2Authentication.getUserAuthentication());
-        }
-
-    }
-
-    /**
-     * This OAuth2RestTemplate is only used by AuthorizationHeaderUtil that is currently used by TokenRelayRequestInterceptor
-     */
     @Bean
-    public OAuth2RestTemplate oAuth2RestTemplate(OAuth2ProtectedResourceDetails oAuth2ProtectedResourceDetails,
-        OAuth2ClientContext oAuth2ClientContext) {
-        return new OAuth2RestTemplate(oAuth2ProtectedResourceDetails, oAuth2ClientContext);
-    }
+    JwtDecoder jwtDecoder() {
+        NimbusJwtDecoderJwkSupport jwtDecoder = (NimbusJwtDecoderJwkSupport)
+            JwtDecoders.fromOidcIssuerLocation(issuerUri);
 
+        OAuth2TokenValidator<Jwt> audienceValidator = new AudienceValidator();
+        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuerUri);
+        OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>(withIssuer, audienceValidator);
+
+        jwtDecoder.setJwtValidator(withAudience);
+
+        return jwtDecoder;
+    }
 }

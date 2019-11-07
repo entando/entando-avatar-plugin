@@ -1,0 +1,7 @@
+version: 0.0.1
+code: avatar-details-widget
+titles:
+    en:  Avatar Details Widget
+    it:  Avatar Details Widget
+group: free
+customUiPath: avatar-details-widget.ftl
