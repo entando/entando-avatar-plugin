@@ -1,0 +1,14 @@
+version: '2.1'
+services:
+  avatarplugin-postgresql:
+    image: "centos/postgresql-96-centos7:latest"
+    environment:
+      POSTGRESQL_DATABASE: avatarPlugin
+      POSTGRESQL_USER: avatarPlugin
+      POSTGRESQL_PASSWORD: password123
+      POSTGRESQL_ADMIN_PASSWORD: password123
+    healthcheck:
+      test: ["CMD","/bin/sh","-i","-c", "psql -h 127.0.0.1 -U avatarPlugin -q -d postgres -c '\\l'|grep avatarPlugin"]
+      interval: 3s
+      timeout: 10s
+      retries: 20

@@ -1,0 +1,31 @@
+version: '2.1'
+services:
+  avatarplugin-app:
+    image: entando/entando-avatar-plugin:6.0.0-SNAPSHOT
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m
+      - SPRING_PROFILES_ACTIVE=prod,swagger
+      - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://avatarplugin-postgresql:5432/avatarPlugin
+      - SPRING_DATASOURCE_USERNAME=avatarPlugin
+      - SPRING_DATASOURCE_PASSWORD=password123
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER_URI=http://avatarplugin-keycloak:8080/auth/realms/entando
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_ID=avatar-plugin
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_SECRET=dcdac4f8-a20c-4ee2-84f2-9479f5323bf3
+      - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
+      - SERVER_SERVLET_CONTEXT_PATH=/avatarPlugin
+    ports:
+      - 8081:8081
+    depends_on:
+      avatarplugin-postgresql:
+        condition: service_healthy
+      avatarplugin-keycloak:
+        condition: service_healthy
+  avatarplugin-postgresql:
+    extends:
+      file: postgresql.yml
+      service: avatarplugin-postgresql
+  avatarplugin-keycloak:
+    extends:
+      file: keycloak.yml
+      service: avatarplugin-keycloak

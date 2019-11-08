@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
   avatarplugin-prometheus:
     image: prom/prometheus:v2.12.0

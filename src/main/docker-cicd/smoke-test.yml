@@ -1,0 +1,30 @@
+version: '2.1'
+services:
+  avatarplugin-app:
+    extends:
+      file: app.yml
+      service: avatarplugin-app
+    depends_on:
+      avatarplugin-postgresql:
+        condition: service_healthy
+      avatarplugin-keycloak:
+        condition: service_healthy
+  avatarplugin-postgresql:
+    extends:
+      file: postgresql.yml
+      service: avatarplugin-postgresql
+  avatarplugin-keycloak:
+    extends:
+      file: keycloak.yml
+      service: avatarplugin-keycloak
+  smoke-test:
+    image: entando/entando-spring-actuator-test:6.0.0-SNAPSHOT
+    environment:
+      SPRING_BOOT_BASE_URL: http://avatarplugin-app:8081/avatarPlugin/management
+      INTERVAL: 3
+      MAX_ATTEMPTS: 30
+    depends_on:
+      avatarplugin-postgresql:
+        condition: service_healthy
+      avatarplugin-keycloak:
+        condition: service_healthy

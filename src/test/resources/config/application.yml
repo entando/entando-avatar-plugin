@@ -102,6 +102,17 @@ jhipster:
     logs: # Reports metrics in the logs
       enabled: true
       report-frequency: 60 # in seconds
+# ===================================================================
+# Entando specific properties
+# ===================================================================
+
+entando:
+  client-id: ${KEYCLOAK_CLIENT_ID:test-plugin-a-server}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:dcdac4f8-a20c-4ee2-84f2-9479f5323bf3}
+  access-token-uri: ${TOKEN_SERVICE:http://test-keycloak.192.168.1.9.nip.io/auth/realms/entando}/protocol/openid-connect/token
+  auth-service-uri: ${ENTANDO_AUTH:http://eti.192.168.1.9.nip.io/user-mgmt}
+  config-service-uri: ${ENTANDO_CONFIG:http://test-plugin-a.192.168.1.9.nip.io/config-service}
+  widgets-folder: src/main/resources/widgets
 
 # ===================================================================
 # Application specific properties
