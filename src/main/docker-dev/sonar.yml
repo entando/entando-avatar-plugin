@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
   avatarplugin-sonar:
     image: sonarqube:7.9.1-community

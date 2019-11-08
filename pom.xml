@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.entando.plugin.avatar</groupId>
-    <artifactId>avatar-plugin</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>entando-avatar-plugin</artifactId>
+    <version>6.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Avatar Plugin</name>
 
@@ -227,6 +227,10 @@
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
         </dependency>
@@ -360,12 +364,10 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-<scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
-<scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>

@@ -1,0 +1,18 @@
+version: '2.1'
+services:
+  avatarplugin-keycloak:
+    image: jboss/keycloak:latest
+    environment:
+      DB_VENDOR: h2
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_IMPORT: /tmp/realm.json
+    volumes:
+      - ./keycloak/sample-realm.json:/tmp/realm.json
+    ports:
+      - 8084:8080
+    healthcheck:
+      test: ["CMD","/bin/sh","-i","-c", "curl -v http://localhost:8080/auth"]
+      interval: 3s
+      timeout: 10s
+      retries: 20
